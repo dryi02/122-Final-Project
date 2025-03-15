@@ -1,6 +1,6 @@
 # Tile Matching Game Environment
 
-A flexible Java-based environment for creating and playing various tile matching games like Tetris and Bejeweled.
+A flexible Java-based environment for creating and playing match-3 style tile matching games.
 
 ## Overview
 
@@ -9,31 +9,58 @@ This project provides a modular framework for developing tile matching games. Th
 ## Features
 
 - Flexible grid-based game environment
-- Support for different game types (Tetris, Bejeweled, etc.)
+- Interactive block manipulation and matching
 - Customizable block types and colors
 - Score tracking and game state management
-- Game launcher for selecting different games
+- Gravity effects and cascading matches
 
-## Included Games
+## Grid Demo Game
 
-### Tetris
+The project includes a fully functional match-3 style game demo that demonstrates the core mechanics of tile matching games:
 
-The classic block-stacking game where you arrange falling tetrominoes to create complete rows.
+### Features
 
-- Controls:
-  - Left/Right Arrow: Move tetromino left/right
-  - Down Arrow: Move tetromino down
-  - Up Arrow: Rotate tetromino
-  - Space: Hard drop
+- **Block Swapping**: Swap adjacent blocks to create matches of 3 or more
+- **Connected Block Popping**: Remove groups of 3+ connected blocks of the same color
+- **Gravity Effects**: Blocks fall to fill empty spaces after matches are removed
+- **Cascading Matches**: Automatic detection and removal of new matches after blocks fall
+- **Randomization Options**: Generate grids with or without initial matches
+- **Score Tracking**: Earn points for each block removed
 
-### Bejeweled
+### Controls
 
-A match-3 game where you swap adjacent gems to create matches of three or more.
+- **Arrow Keys**: Move selection cursor
+- **Space**: Toggle block/Confirm swap
+- **S**: Toggle swap mode (for swapping blocks)
+- **P**: Pop connected blocks (3+ of same color)
+- **A**: Check all matches on the board
+- **M**: Toggle initial matches option (for randomization)
+- **R**: Randomize grid
+- **C**: Clear grid
+- **Escape**: Exit the demo
 
-- Controls:
-  - Select a gem by pressing a key corresponding to its position
-  - Select an adjacent gem to swap with the selected gem
-  - WASD or Arrow keys can be used for navigation
+### How to Play
+
+1. **Basic Gameplay**:
+
+   - Use arrow keys to move the selection cursor
+   - Press 'S' to enter swap mode
+   - Select a block, then move to an adjacent block and press Space to swap
+   - If the swap creates a match of 3 or more blocks, they will be removed
+   - Blocks will fall to fill empty spaces, and new blocks will appear at the top
+   - Chain reactions can occur if falling blocks create new matches
+
+2. **Manual Popping**:
+
+   - Select a block that is part of a group of 3 or more connected blocks of the same color
+   - Press 'P' to pop all connected blocks of that color
+   - Score points based on the number of blocks removed
+
+3. **Randomization Options**:
+   - Press 'M' to toggle whether initial matches are allowed when randomizing
+   - Press 'R' to randomize the grid according to your preference
+   - "Initial Matches: Allowed" creates a completely random grid
+   - "Initial Matches: Not Allowed" ensures no matches exist when the grid is created
 
 ## Architecture
 
@@ -41,37 +68,33 @@ The environment consists of several key components:
 
 - **Display**: Handles the graphical representation of the game
 - **GameState**: Manages the game logic and state
-- **Timer**: Handles timing-related functionality
-- **Player**: Tracks player statistics
 - **Grid**: Manages the game grid and block placement
-- **Block**: Represents individual blocks/gems in the game
+- **Block**: Represents individual blocks in the game
+- **GridDemoState**: Implements the match-3 game mechanics
+- **GridDemoLauncher**: Handles the game loop and input processing
 
-## Extending the Framework
+## Running the Game
 
-To create a new game type:
+1. Compile the project:
 
-1. Create a new class that extends `GameState`
-2. Implement the required abstract methods:
-   - `handleInput(String input)`: Handle player input
-   - `updateGame(double deltaTime)`: Update the game state
-   - `renderUI(Graphics g)`: Render the user interface
-   - `checkGameOver()`: Check if the game is over
+   ```
+   javac -d bin src/main/java/tilematch/*.java
+   ```
 
-## Running the Games
-
-1. Compile the project
-2. Run the `GameLauncher` class
-3. Select a game from the launcher menu
+2. Run the game:
+   ```
+   java -cp bin tilematch.Main
+   ```
 
 ## Requirements
 
-- Java 17 or higher
+- Java 8 or higher
 - Swing library (included in standard JDK)
 
 ## Future Improvements
 
-- Add more game types (Columns, Puzzle Bobble, etc.)
-- Implement high score tracking
-- Add sound effects and music
+- Add more block types with special abilities
+- Implement level progression
+- Add time-based challenges
 - Create more advanced visual effects
-- Add multiplayer support
+- Add sound effects and music
