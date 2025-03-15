@@ -83,7 +83,7 @@ The environment consists of several key components:
 
 2. Run the game:
    ```
-   java -cp bin tilematch.Main
+   java -cp bin tilematch.GridDemoLauncher
    ```
 
 ## Requirements
