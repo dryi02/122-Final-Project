@@ -31,6 +31,7 @@ public class SameGameState extends GameState {
     private int swapCol = -1;
     private boolean swapMode = false;
     private String message = getCurrPlayerName() + "'s Turn!";
+    private String message2 = "Turns: " + getCurrPlayerScore();
     private Grid gridSave;
     private boolean playerOneFinished = false;
 
@@ -150,6 +151,7 @@ public class SameGameState extends GameState {
             // Update score and message
             addCurrPlayerScore(1);
             message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
+            message2= "Turns: " + getCurrPlayerScore();
 
             // Apply gravity to make blocks fall
             applyGravity();
@@ -247,6 +249,7 @@ public class SameGameState extends GameState {
         grid.clear();
         initializeGrid();
         message = getCurrPlayerName() + "'s Turn!";
+        message2 = "Turns: " + getCurrPlayerScore();
     }
 
     /**
@@ -274,7 +277,7 @@ public class SameGameState extends GameState {
 
         g.drawString("Same Game", textX, textY);
         g.drawString(message, textX, textY + 30);
-        g.drawString("Turns: " + getCurrPlayerScore(), textX, textY + 60);
+        g.drawString(message2, textX, textY + 60);
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
@@ -318,6 +321,7 @@ public class SameGameState extends GameState {
     		switchPlayers();
     		this.playerOneFinished = true;
     		message =  getCurrPlayerName() + "'s Turn!";
+    		message2 = "Turns: 0";
     		loadGridSave();
     	}
     }
@@ -325,14 +329,16 @@ public class SameGameState extends GameState {
     @Override
     protected void checkGameOver() {
         if (grid.isGridEmpty() && playerOneFinished) {
-        	if(players.get(0).getScore() > players.get(1).getScore()) {
+        	if(players.get(0).getScore() < players.get(1).getScore()) {
         		message = "Player One Wins!";
-        	}else if(players.get(0).getScore() < players.get(1).getScore()) {
+        	}else if(players.get(0).getScore() > players.get(1).getScore()) {
         		message = "Player Two Wins!";
         	}else {
         		message = "It's a Tie!";
         	}
+        	message2 = "Player 1 Score = " + players.get(0).getScore() + " Player 2 Score = " + players.get(1).getScore();
         	playerOneFinished = false;
+        	gridSave.clear();
         	switchPlayers();
         	resetAllPlayers();
         }
