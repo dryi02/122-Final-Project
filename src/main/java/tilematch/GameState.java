@@ -25,8 +25,8 @@ public abstract class GameState {
      */
     public GameState(int rows, int columns) {
         this.grid = new Grid(rows, columns);
-        Player playerOne = new Player();
-        Player playerTwo = new Player();
+        Player playerOne = new Player("Player 1");
+        Player playerTwo = new Player("Player 2");
         this.players.add(playerOne);
         this.players.add(playerTwo);
         this.activePlayer = players.get(currPlayerIndex);
@@ -103,6 +103,10 @@ public abstract class GameState {
     	}
     	this.activePlayer = players.get(currPlayerIndex);
     }
+    
+    public String getCurrPlayerName() {
+    	return this.activePlayer.getName();
+    }
 
     /**
      * Gets the current score.
@@ -119,6 +123,12 @@ public abstract class GameState {
     
     public void resetActivePlayer() {
     	activePlayer.reset();
+    }
+    
+    public void resetAllPlayers() {
+    	for(int i = 0; i<players.size(); i++) {
+    		players.get(i).reset();
+    	}
     }
 
     /**
