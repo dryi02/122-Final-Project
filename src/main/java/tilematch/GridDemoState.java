@@ -70,15 +70,26 @@ public class GridDemoState extends GameState {
      * Initializes the grid with random blocks, allowing matches.
      */
     private void initializeGridWithMatches() {
-        // Place random blocks on the grid, ensuring all cells are filled
+        // Create a board that encourages matches by making neighboring blocks likely to have the same color
         for (int row = 0; row < grid.getRows(); row++) {
             for (int col = 0; col < grid.getColumns(); col++) {
-                Color color = BLOCK_COLORS[RANDOM.nextInt(BLOCK_COLORS.length)];
+                Color color;
+                if (row > 0 && RANDOM.nextDouble() < 0.7) {
+                    // 70% chance to inherit the color from the block above
+                    color = grid.getBlock(row - 1, col).getColor();
+                } else if (col > 0 && RANDOM.nextDouble() < 0.7) {
+                    // 70% chance to inherit the color from the block to the left
+                    color = grid.getBlock(row, col - 1).getColor();
+                } else {
+                    // Otherwise, pick a random color
+                    color = BLOCK_COLORS[RANDOM.nextInt(BLOCK_COLORS.length)];
+                }
                 Block block = new Block(row, col, Block.BlockType.STANDARD, color);
                 grid.placeBlock(block, row, col);
             }
         }
     }
+
 
     /**
      * Initializes the grid with random blocks, ensuring no initial matches.
@@ -472,10 +483,10 @@ public class GridDemoState extends GameState {
             applyGravity();
 
             // Fill empty spaces at the top with new blocks
-            fillEmptySpaces();
+            //fillEmptySpaces();
 
             // Check for cascading matches
-            checkCascadingMatches();
+            //checkCascadingMatches();
         } else {
             message = "Need at least " + MIN_BLOCKS_TO_POP + " connected blocks to pop";
         }
