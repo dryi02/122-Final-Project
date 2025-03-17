@@ -199,6 +199,23 @@ public class Grid {
         }
         return false;
     }
+    
+    /**
+     * Checks if the entire grid is empty.
+     *
+     * @return True if the grid is empty, false otherwise
+     */
+    public boolean isGridEmpty() {
+        for (int row = 0; row < rows; row++) {
+            for (int column = 0; column < columns; column++) {
+                if (cells[row][column] != null) {
+                    return false; // Found a non-empty cell, so the grid is not empty
+                }
+            }
+        }
+        return true; // All cells are empty
+    }
+    
 
     /**
      * Renders the grid to the specified graphics context.

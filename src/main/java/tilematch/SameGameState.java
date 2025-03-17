@@ -30,8 +30,9 @@ public class SameGameState extends GameState {
     private int swapRow = -1;
     private int swapCol = -1;
     private boolean swapMode = false;
-    private String message = "Click arrow keys to move selection";
-    private int score = 0;
+    private String message = getCurrPlayerName() + "'s Turn!";
+    private Grid gridSave;
+    private boolean playerOneFinished = false;
 
     /**
      * Creates a new GridDemoState with the specified dimensions.
@@ -41,6 +42,7 @@ public class SameGameState extends GameState {
      */
     public SameGameState(int rows, int columns) {
         super(rows, columns);
+        gridSave = new Grid(rows, columns);
         initializeGrid();
     }
 
@@ -75,6 +77,7 @@ public class SameGameState extends GameState {
                 }
                 Block block = new Block(row, col, Block.BlockType.STANDARD, color);
                 grid.placeBlock(block, row, col);
+                gridSave.placeBlock(block, row, col);
             }
         }
     }
@@ -145,11 +148,12 @@ public class SameGameState extends GameState {
             }
 
             // Update score and message
-            score += connectedBlocks.size() * 10;
-            message = "Popped " + connectedBlocks.size() + " blocks! Score: " + score;
+            addCurrPlayerScore(1);
+            message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
 
             // Apply gravity to make blocks fall
             applyGravity();
+            checkSwitchPlayer();
 
             // Fill empty spaces at the top with new blocks
             //fillEmptySpaces();
@@ -242,8 +246,7 @@ public class SameGameState extends GameState {
     private void randomizeGrid() {
         grid.clear();
         initializeGrid();
-        score = 0;
-        message = "Click P to match tiles!";
+        message = getCurrPlayerName() + "'s Turn!";
     }
 
     /**
@@ -251,7 +254,7 @@ public class SameGameState extends GameState {
      */
     private void clearGrid() {
         grid.clear();
-        score = 0;
+        resetActivePlayer();
         message = "Grid cleared";
     }
 
@@ -271,7 +274,7 @@ public class SameGameState extends GameState {
 
         g.drawString("Same Game", textX, textY);
         g.drawString(message, textX, textY + 30);
-        g.drawString("Score: " + score, textX, textY + 60);
+        g.drawString("Turns: " + getCurrPlayerScore(), textX, textY + 60);
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
@@ -301,10 +304,38 @@ public class SameGameState extends GameState {
             g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
         }
     }
+    
+    protected void loadGridSave() {
+    	 for (int row = 0; row < grid.getRows(); row++) {
+             for (int col = 0; col < grid.getColumns(); col++) {
+                 grid.placeBlock(gridSave.getBlock(row, col), row, col);
+             }
+         }
+    }
+    
+    protected void checkSwitchPlayer() {
+    	if(grid.isGridEmpty() && this.playerOneFinished == false) {
+    		switchPlayers();
+    		this.playerOneFinished = true;
+    		message =  getCurrPlayerName() + "'s Turn!";
+    		loadGridSave();
+    	}
+    }
 
     @Override
     protected void checkGameOver() {
-        // No game over condition in this demo
+        if (grid.isGridEmpty() && playerOneFinished) {
+        	if(players.get(0).getScore() > players.get(1).getScore()) {
+        		message = "Player One Wins!";
+        	}else if(players.get(0).getScore() < players.get(1).getScore()) {
+        		message = "Player Two Wins!";
+        	}else {
+        		message = "It's a Tie!";
+        	}
+        	playerOneFinished = false;
+        	switchPlayers();
+        	resetAllPlayers();
+        }
     }
 
     @Override
