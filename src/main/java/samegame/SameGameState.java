@@ -246,7 +246,7 @@ public class SameGameState extends GameState {
         grid.clear();
         initializeGrid();
         score = 0;
-        message = "Grid randomized" + (allowInitialMatches ? " with" : " without") + " initial matches";
+        message = "Click P to match tiles!";
     }
 
     /**
@@ -272,17 +272,15 @@ public class SameGameState extends GameState {
         int textX = grid.getXOffset() + grid.getColumns() * grid.getCellSize() + 20;
         int textY = grid.getYOffset() + 30;
 
-        g.drawString("Grid Demo", textX, textY);
+        g.drawString("Same Game", textX, textY);
         g.drawString(message, textX, textY + 30);
         g.drawString("Score: " + score, textX, textY + 60);
-        g.drawString("Initial Matches: " + (allowInitialMatches ? "Allowed" : "Not Allowed"), textX, textY + 80);
-
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
-        g.drawString("P: Pop connected blocks", textX, textY + 200);
-        g.drawString("R: Randomize grid", textX, textY + 260);
-        g.drawString("C: Clear grid", textX, textY + 280);
+        g.drawString("P: Pop connected blocks", textX, textY + 160);
+        g.drawString("R: Randomize grid", textX, textY + 180);
+        g.drawString("C: Clear grid", textX, textY + 200);
 
         // Draw selection highlight
         if (selectedRow >= 0 && selectedCol >= 0) {
