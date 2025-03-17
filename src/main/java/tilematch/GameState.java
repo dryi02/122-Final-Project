@@ -15,7 +15,6 @@ public abstract class GameState {
     protected Timer timer;
     protected List<Block> activeBlocks;
     protected boolean gameOver;
-    protected int score;
     protected int currPlayerIndex = 0;
 
     /**
@@ -34,7 +33,7 @@ public abstract class GameState {
         this.timer = new Timer();
         this.activeBlocks = new ArrayList<>();
         this.gameOver = false;
-        this.score = 0;
+
     }
 
     /**
@@ -110,8 +109,16 @@ public abstract class GameState {
      *
      * @return The current score
      */
-    public int getScore() {
-        return score;
+    public int getCurrPlayerScore() {
+        return activePlayer.getScore();
+    }
+    
+    public void addCurrPlayerScore(int score) {
+        activePlayer.addScore(score);
+    }
+    
+    public void resetActivePlayer() {
+    	activePlayer.reset();
     }
 
     /**

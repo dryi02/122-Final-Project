@@ -31,7 +31,6 @@ public class SameGameState extends GameState {
     private int swapCol = -1;
     private boolean swapMode = false;
     private String message = "Click arrow keys to move selection";
-    private int score = 0;
 
     /**
      * Creates a new GridDemoState with the specified dimensions.
@@ -145,8 +144,8 @@ public class SameGameState extends GameState {
             }
 
             // Update score and message
-            score += connectedBlocks.size() * 10;
-            message = "Popped " + connectedBlocks.size() + " blocks! Score: " + score;
+            addCurrPlayerScore(1);
+            message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
 
             // Apply gravity to make blocks fall
             applyGravity();
@@ -242,7 +241,7 @@ public class SameGameState extends GameState {
     private void randomizeGrid() {
         grid.clear();
         initializeGrid();
-        score = 0;
+        resetActivePlayer();
         message = "Click P to match tiles!";
     }
 
@@ -251,7 +250,7 @@ public class SameGameState extends GameState {
      */
     private void clearGrid() {
         grid.clear();
-        score = 0;
+        resetActivePlayer();
         message = "Grid cleared";
     }
 
@@ -271,7 +270,7 @@ public class SameGameState extends GameState {
 
         g.drawString("Same Game", textX, textY);
         g.drawString(message, textX, textY + 30);
-        g.drawString("Score: " + score, textX, textY + 60);
+        g.drawString("Turns: " + getCurrPlayerScore(), textX, textY + 60);
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
