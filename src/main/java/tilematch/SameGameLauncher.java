@@ -1,10 +1,9 @@
-package samegame;
+package tilematch;
 
 
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import tilematch.*;
 
 /**
  * A simple launcher for the grid demonstration.

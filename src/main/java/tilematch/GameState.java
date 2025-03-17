@@ -10,11 +10,13 @@ import java.util.List;
  */
 public abstract class GameState {
     protected Grid grid;
-    protected Player player;
+    protected List<Player> players = new ArrayList<Player>();
+    protected Player activePlayer;
     protected Timer timer;
     protected List<Block> activeBlocks;
     protected boolean gameOver;
     protected int score;
+    protected int currPlayerIndex = 0;
 
     /**
      * Creates a new GameState with the specified grid dimensions.
@@ -24,7 +26,11 @@ public abstract class GameState {
      */
     public GameState(int rows, int columns) {
         this.grid = new Grid(rows, columns);
-        this.player = new Player();
+        Player playerOne = new Player();
+        Player playerTwo = new Player();
+        this.players.add(playerOne);
+        this.players.add(playerTwo);
+        this.activePlayer = players.get(currPlayerIndex);
         this.timer = new Timer();
         this.activeBlocks = new ArrayList<>();
         this.gameOver = false;
@@ -89,6 +95,15 @@ public abstract class GameState {
      * Checks if the game is over.
      */
     protected abstract void checkGameOver();
+    
+    public void switchPlayers() {
+    	if(this.currPlayerIndex == 0) {
+    		this.currPlayerIndex = 1;
+    	}else {
+    		this.currPlayerIndex = 0;
+    	}
+    	this.activePlayer = players.get(currPlayerIndex);
+    }
 
     /**
      * Gets the current score.

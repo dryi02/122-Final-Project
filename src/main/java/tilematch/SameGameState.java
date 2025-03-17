@@ -1,4 +1,4 @@
-package samegame;
+package tilematch;
 
 
 import java.awt.Color;
@@ -10,8 +10,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
-
-import tilematch.*;
 
 /**
  * A demonstration class that shows a grid with blocks that can be interacted
@@ -34,7 +32,6 @@ public class SameGameState extends GameState {
     private boolean swapMode = false;
     private String message = "Click arrow keys to move selection";
     private int score = 0;
-    private boolean allowInitialMatches = true;
 
     /**
      * Creates a new GridDemoState with the specified dimensions.
@@ -279,7 +276,7 @@ public class SameGameState extends GameState {
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
         g.drawString("P: Pop connected blocks", textX, textY + 160);
-        g.drawString("R: Randomize grid", textX, textY + 180);
+        g.drawString("R: New Game", textX, textY + 180);
         g.drawString("C: Clear grid", textX, textY + 200);
 
         // Draw selection highlight
