@@ -392,6 +392,19 @@ public class BejeweledGameState extends GameState {
             // Apply gravity and fill empty spaces
             applyGravity();
             fillEmptySpaces();
+
+            // Check for new matches after blocks fall and new blocks are added
+            if (checkForMatches()) {
+                // If new matches were found, don't switch players yet
+                return true;
+            }
+
+            // Only switch players if no more matches are found
+            switchPlayers();
+            currentPlayerTime = PLAYER_TIME_LIMIT;
+            lastTimeUpdate = System.currentTimeMillis();
+            message = getCurrPlayerName() + "'s Turn!";
+            message3 = "Score: " + getCurrPlayerScore();
             return true;
         }
         return false;

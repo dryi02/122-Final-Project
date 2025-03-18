@@ -5,17 +5,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 
 /**
- * A simple launcher for the grid demonstration.
+ * A simple launcher for the Bejeweled game.
  */
-public class BejeweledLauncher {
+public class BejeweledLauncher extends GameLauncher {
     protected static final int WINDOW_WIDTH = 800;
     protected static final int WINDOW_HEIGHT = 600;
-    protected static final String WINDOW_TITLE = "Bejeweled";
-
-    protected Display display;
-    protected BejeweledGameState demoState;
-    protected boolean running;
-    protected long lastUpdateTime;
+    private static final String WINDOW_TITLE = "Bejeweled";
 
     /**
      * The main entry point for the application.
@@ -32,7 +27,8 @@ public class BejeweledLauncher {
      * 
      * @return Array containing player 1 and player 2 names
      */
-    private String[] getPlayerNames() {
+    @Override
+    protected String[] getPlayerNames() {
         // Check if we already have player names
         String[] existingNames = GameChooser.getPlayerNames();
         if (existingNames != null && existingNames[0] != null && existingNames[1] != null) {
@@ -61,27 +57,17 @@ public class BejeweledLauncher {
         return new String[] { player1Name, player2Name };
     }
 
-    /**
-     * Runs the game.
-     */
-    public void run() {
-        initialize();
-        gameLoop();
-    }
-
-    /**
-     * Initializes the demo.
-     */
+    @Override
     protected void initialize() {
         // Get player names from GameChooser
-        String[] playerNames = GameChooser.getPlayerNames();
+        String[] playerNames = getPlayerNames();
 
         display = new Display(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
-        demoState = new BejeweledGameState(10, 10);
-        demoState.setDisplay(display);
+        gameState = new BejeweledGameState(10, 10);
+        gameState.setDisplay(display);
 
         // Set player names
-        demoState.setPlayerNames(playerNames[0], playerNames[1]);
+        ((BejeweledGameState) gameState).setPlayerNames(playerNames[0], playerNames[1]);
 
         display.addKeyListener(new KeyAdapter() {
             @Override
@@ -94,53 +80,29 @@ public class BejeweledLauncher {
         lastUpdateTime = System.nanoTime();
     }
 
-    /**
-     * The main game loop.
-     */
-    protected void gameLoop() {
-        while (running) {
-            long currentTime = System.nanoTime();
-            double deltaTime = (currentTime - lastUpdateTime) / 1_000_000_000.0;
-            lastUpdateTime = currentTime;
-
-            demoState.update(deltaTime);
-            display.render(demoState);
-
-            try {
-                Thread.sleep(16); // ~60 FPS
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Handles key presses.
-     *
-     * @param keyCode The key code of the pressed key
-     */
+    @Override
     protected void handleKeyPress(int keyCode) {
         switch (keyCode) {
             case KeyEvent.VK_UP:
-                demoState.handleInput("UP");
+                gameState.handleInput("UP");
                 break;
             case KeyEvent.VK_DOWN:
-                demoState.handleInput("DOWN");
+                gameState.handleInput("DOWN");
                 break;
             case KeyEvent.VK_LEFT:
-                demoState.handleInput("LEFT");
+                gameState.handleInput("LEFT");
                 break;
             case KeyEvent.VK_RIGHT:
-                demoState.handleInput("RIGHT");
+                gameState.handleInput("RIGHT");
                 break;
             case KeyEvent.VK_SPACE:
-                demoState.handleInput("SPACE");
+                gameState.handleInput("SPACE");
                 break;
             case KeyEvent.VK_R:
-                demoState.handleInput("R");
+                gameState.handleInput("R");
                 break;
             case KeyEvent.VK_M:
-                demoState.handleInput("M");
+                gameState.handleInput("M");
                 break;
             case KeyEvent.VK_ESCAPE:
                 running = false;
