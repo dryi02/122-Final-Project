@@ -16,6 +16,7 @@ public abstract class GameState {
     protected List<Block> activeBlocks;
     protected boolean gameOver;
     protected int currPlayerIndex = 0;
+    protected Display display;
 
     /**
      * Creates a new GameState with the specified grid dimensions.
@@ -94,18 +95,18 @@ public abstract class GameState {
      * Checks if the game is over.
      */
     protected abstract void checkGameOver();
-    
+
     public void switchPlayers() {
-    	if(this.currPlayerIndex == 0) {
-    		this.currPlayerIndex = 1;
-    	}else {
-    		this.currPlayerIndex = 0;
-    	}
-    	this.activePlayer = players.get(currPlayerIndex);
+        if (this.currPlayerIndex == 0) {
+            this.currPlayerIndex = 1;
+        } else {
+            this.currPlayerIndex = 0;
+        }
+        this.activePlayer = players.get(currPlayerIndex);
     }
-    
+
     public String getCurrPlayerName() {
-    	return this.activePlayer.getName();
+        return this.activePlayer.getName();
     }
 
     /**
@@ -116,19 +117,19 @@ public abstract class GameState {
     public int getCurrPlayerScore() {
         return activePlayer.getScore();
     }
-    
+
     public void addCurrPlayerScore(int score) {
         activePlayer.addScore(score);
     }
-    
+
     public void resetActivePlayer() {
-    	activePlayer.reset();
+        activePlayer.reset();
     }
-    
+
     public void resetAllPlayers() {
-    	for(int i = 0; i<players.size(); i++) {
-    		players.get(i).reset();
-    	}
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).reset();
+        }
     }
 
     /**
@@ -138,5 +139,9 @@ public abstract class GameState {
      */
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public void setDisplay(Display display) {
+        this.display = display;
     }
 }

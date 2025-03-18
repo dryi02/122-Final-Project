@@ -69,6 +69,10 @@ public class Display {
         frame.requestFocusInWindow();
     }
 
+    public JFrame getFrame() {
+        return frame;
+    }
+
     /**
      * Inner class that extends JPanel to render the game.
      */

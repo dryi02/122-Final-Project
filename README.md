@@ -4,7 +4,7 @@ A flexible Java-based environment for creating and playing match-3 style tile ma
 
 ## Overview
 
-This project provides a modular framework for developing tile matching games. The environment is designed to be extensible, allowing for the implementation of different game mechanics while reusing common components.
+This project provides a modular framework for developing tile matching games. The environment includes two different games: Bejeweled and SameGame, each with unique mechanics and gameplay styles.
 
 ## Features
 
@@ -13,65 +13,63 @@ This project provides a modular framework for developing tile matching games. Th
 - Customizable block types and colors
 - Score tracking and game state management
 - Gravity effects and cascading matches
+- Player statistics tracking across games
+- Menu system for game selection
 
-## Grid Demo Game
+## Games
 
-The project includes a fully functional match-3 style game demo that demonstrates the core mechanics of tile matching games:
+### Bejeweled
 
-### Features
+A time-based match-3 game where players take turns making matches.
 
-- **Block Swapping**: Swap adjacent blocks to create matches of 3 or more
-- **Connected Block Popping**: Remove groups of 3+ connected blocks of the same color
-- **Gravity Effects**: Blocks fall to fill empty spaces after matches are removed
-- **Cascading Matches**: Automatic detection and removal of new matches after blocks fall
-- **Randomization Options**: Generate grids with or without initial matches
-- **Score Tracking**: Earn points for each block removed
+#### Features
 
-### Controls
+- **Time Limit**: Each player has 30 seconds per turn
+- **Global Timer**: 5-minute game time limit
+- **Block Swapping**: Swap adjacent blocks to create matches
+- **Gravity Effects**: Blocks fall to fill empty spaces
+- **Score Tracking**: Points for each match made
+- **Win Tracking**: Keeps track of wins across games
+
+#### Controls
 
 - **Arrow Keys**: Move selection cursor
-- **Space**: Toggle block/Confirm swap
-- **S**: Toggle swap mode (for swapping blocks)
-- **P**: Pop connected blocks (3+ of same color)
-- **A**: Check all matches on the board
-- **M**: Toggle initial matches option (for randomization)
-- **R**: Randomize grid
+- **Space**: Select/Confirm block swap
+- **R**: Start new game
+- **M**: Return to menu
+- **ESC**: Exit game
+
+### SameGame
+
+A turn-based game where players take turns removing connected blocks.
+
+#### Features
+
+- **Turn-Based**: Players alternate turns
+- **Connected Block Removal**: Remove groups of same-colored blocks
+- **Grid Reset**: Grid resets after each player's turn
+- **Win Tracking**: Keeps track of wins across games
+- **Least Turns Wins**: Player with fewer turns wins
+
+#### Controls
+
+- **Arrow Keys**: Move selection cursor
+- **P**: Pop connected blocks
+- **R**: Start new game
 - **C**: Clear grid
-- **Escape**: Exit the demo
-
-### How to Play
-
-1. **Basic Gameplay**:
-
-   - Use arrow keys to move the selection cursor
-   - Press 'S' to enter swap mode
-   - Select a block, then move to an adjacent block and press Space to swap
-   - If the swap creates a match of 3 or more blocks, they will be removed
-   - Blocks will fall to fill empty spaces, and new blocks will appear at the top
-   - Chain reactions can occur if falling blocks create new matches
-
-2. **Manual Popping**:
-
-   - Select a block that is part of a group of 3 or more connected blocks of the same color
-   - Press 'P' to pop all connected blocks of that color
-   - Score points based on the number of blocks removed
-
-3. **Randomization Options**:
-   - Press 'M' to toggle whether initial matches are allowed when randomizing
-   - Press 'R' to randomize the grid according to your preference
-   - "Initial Matches: Allowed" creates a completely random grid
-   - "Initial Matches: Not Allowed" ensures no matches exist when the grid is created
+- **M**: Return to menu
+- **ESC**: Exit game
 
 ## Architecture
 
 The environment consists of several key components:
 
+- **GameChooser**: Main menu system for game selection and player management
 - **Display**: Handles the graphical representation of the game
-- **GameState**: Manages the game logic and state
+- **GameState**: Abstract base class for game logic and state
 - **Grid**: Manages the game grid and block placement
 - **Block**: Represents individual blocks in the game
-- **GridDemoState**: Implements the match-3 game mechanics
-- **GridDemoLauncher**: Handles the game loop and input processing
+- **Player**: Manages player information and scores
 
 ## Running the Game
 
@@ -83,18 +81,6 @@ The environment consists of several key components:
 
 2. Run the game:
    ```
-   java -cp bin tilematch.GridDemoLauncher
+   java -cp bin tilematch.GameChooser
    ```
 
-## Requirements
-
-- Java 8 or higher
-- Swing library (included in standard JDK)
-
-## Future Improvements
-
-- Add more block types with special abilities
-- Implement level progression
-- Add time-based challenges
-- Create more advanced visual effects
-- Add sound effects and music

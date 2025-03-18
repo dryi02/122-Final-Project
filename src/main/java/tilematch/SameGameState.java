@@ -1,6 +1,5 @@
 package tilematch;
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -10,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import javax.swing.SwingUtilities;
 
 /**
  * A demonstration class that shows a grid with blocks that can be interacted
@@ -24,7 +24,6 @@ public class SameGameState extends GameState {
             Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK
     };
 
-
     private int selectedRow = -1;
     private int selectedCol = -1;
     private int swapRow = -1;
@@ -34,6 +33,20 @@ public class SameGameState extends GameState {
     private String message2 = "Turns: " + getCurrPlayerScore();
     private Grid gridSave;
     private boolean playerOneFinished = false;
+    private int player1Wins = 0;
+    private int player2Wins = 0;
+
+    /**
+     * Sets custom names for both players.
+     * 
+     * @param player1Name Name for Player 1
+     * @param player2Name Name for Player 2
+     */
+    public void setPlayerNames(String player1Name, String player2Name) {
+        players.get(0).setName(player1Name);
+        players.get(1).setName(player2Name);
+        message = getCurrPlayerName() + "'s Turn!";
+    }
 
     /**
      * Creates a new GridDemoState with the specified dimensions.
@@ -43,6 +56,10 @@ public class SameGameState extends GameState {
      */
     public SameGameState(int rows, int columns) {
         super(rows, columns);
+        // Load win counts from GameChooser
+        int[] wins = GameChooser.getPlayerWins();
+        player1Wins = wins[0];
+        player2Wins = wins[1];
         gridSave = new Grid(rows, columns);
         initializeGrid();
     }
@@ -52,7 +69,7 @@ public class SameGameState extends GameState {
      */
     private void initializeGrid() {
         initializeGridWithMatches();
-      
+
         // Select the center block initially
         selectedRow = grid.getRows() / 2;
         selectedCol = grid.getColumns() / 2;
@@ -62,7 +79,8 @@ public class SameGameState extends GameState {
      * Initializes the grid with random blocks, allowing matches.
      */
     private void initializeGridWithMatches() {
-        // Create a board that encourages matches by making neighboring blocks likely to have the same color
+        // Create a board that encourages matches by making neighboring blocks likely to
+        // have the same color
         for (int row = 0; row < grid.getRows(); row++) {
             for (int col = 0; col < grid.getColumns(); col++) {
                 Color color;
@@ -82,7 +100,6 @@ public class SameGameState extends GameState {
             }
         }
     }
-
 
     @Override
     public void handleInput(String input) {
@@ -120,10 +137,19 @@ public class SameGameState extends GameState {
             case "C":
                 clearGrid();
                 break;
-           
+            case "M":
+                // Save current stats before returning to menu
+                GameChooser.updatePlayerNames(players.get(0).getName(), players.get(1).getName());
+                GameChooser.updatePlayerWins(player1Wins, player2Wins);
+                // Close the current display
+                SwingUtilities.invokeLater(() -> {
+                    display.getFrame().dispose();
+                    // Launch game chooser in a new thread
+                    new Thread(() -> GameChooser.main(new String[0])).start();
+                });
+                break;
         }
     }
-
 
     /**
      * Pops (removes) all connected blocks of the same color at the selected
@@ -151,17 +177,17 @@ public class SameGameState extends GameState {
             // Update score and message
             addCurrPlayerScore(1);
             message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
-            message2= "Turns: " + getCurrPlayerScore();
+            message2 = "Turns: " + getCurrPlayerScore();
 
             // Apply gravity to make blocks fall
             applyGravity();
             checkSwitchPlayer();
 
             // Fill empty spaces at the top with new blocks
-            //fillEmptySpaces();
+            // fillEmptySpaces();
 
             // Check for cascading matches
-            //checkCascadingMatches();
+            // checkCascadingMatches();
         } else {
             message = "Need at least " + 1 + " connected blocks to pop";
         }
@@ -249,7 +275,9 @@ public class SameGameState extends GameState {
         grid.clear();
         initializeGrid();
         message = getCurrPlayerName() + "'s Turn!";
-        message2 = "Turns: " + getCurrPlayerScore();
+        message2 = "Turns: " + getCurrPlayerScore() + " | Wins - " +
+                players.get(0).getName() + ": " + player1Wins + " | " +
+                players.get(1).getName() + ": " + player2Wins;
     }
 
     /**
@@ -284,6 +312,7 @@ public class SameGameState extends GameState {
         g.drawString("P: Pop connected blocks", textX, textY + 160);
         g.drawString("R: New Game", textX, textY + 180);
         g.drawString("C: Clear grid", textX, textY + 200);
+        g.drawString("M: Return to Menu", textX, textY + 220);
 
         // Draw selection highlight
         if (selectedRow >= 0 && selectedCol >= 0) {
@@ -307,40 +336,45 @@ public class SameGameState extends GameState {
             g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
         }
     }
-    
+
     protected void loadGridSave() {
-    	 for (int row = 0; row < grid.getRows(); row++) {
-             for (int col = 0; col < grid.getColumns(); col++) {
-                 grid.placeBlock(gridSave.getBlock(row, col), row, col);
-             }
-         }
+        for (int row = 0; row < grid.getRows(); row++) {
+            for (int col = 0; col < grid.getColumns(); col++) {
+                grid.placeBlock(gridSave.getBlock(row, col), row, col);
+            }
+        }
     }
-    
+
     protected void checkSwitchPlayer() {
-    	if(grid.isGridEmpty() && this.playerOneFinished == false) {
-    		switchPlayers();
-    		this.playerOneFinished = true;
-    		message =  getCurrPlayerName() + "'s Turn!";
-    		message2 = "Turns: 0";
-    		loadGridSave();
-    	}
+        if (grid.isGridEmpty() && this.playerOneFinished == false) {
+            switchPlayers();
+            this.playerOneFinished = true;
+            message = getCurrPlayerName() + "'s Turn!";
+            message2 = "Turns: 0";
+            loadGridSave();
+        }
     }
 
     @Override
     protected void checkGameOver() {
         if (grid.isGridEmpty() && playerOneFinished) {
-        	if(players.get(0).getScore() < players.get(1).getScore()) {
-        		message = "Player One Wins!";
-        	}else if(players.get(0).getScore() > players.get(1).getScore()) {
-        		message = "Player Two Wins!";
-        	}else {
-        		message = "It's a Tie!";
-        	}
-        	message2 = "Player 1 Score = " + players.get(0).getScore() + " Player 2 Score = " + players.get(1).getScore();
-        	playerOneFinished = false;
-        	gridSave.clear();
-        	switchPlayers();
-        	resetAllPlayers();
+            if (players.get(0).getScore() > players.get(1).getScore()) {
+                message = players.get(1).getName() + " Wins!";
+                player2Wins++;
+            } else if (players.get(0).getScore() < players.get(1).getScore()) {
+                message = players.get(0).getName() + " Wins!";
+                player1Wins++;
+            } else {
+                message = "It's a Tie!";
+            }
+            message2 = players.get(0).getName() + " Turns = " + players.get(0).getScore() + " | " +
+                    players.get(1).getName() + " Turns = " + players.get(1).getScore();
+            message = message + " | Wins - " + players.get(0).getName() + ": " + player1Wins + " | " +
+                    players.get(1).getName() + ": " + player2Wins;
+            playerOneFinished = false;
+            gridSave.clear();
+            switchPlayers();
+            resetAllPlayers();
         }
     }
 

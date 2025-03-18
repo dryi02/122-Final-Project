@@ -1,9 +1,8 @@
 package tilematch;
 
-
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
 
 /**
  * A simple launcher for the grid demonstration.
@@ -29,15 +28,53 @@ public class SameGameLauncher {
     }
 
     /**
+     * Gets player names through dialog boxes.
+     * 
+     * @return Array containing player 1 and player 2 names
+     */
+    private static String[] getPlayerNames() {
+        // Check if we already have player names
+        String[] existingNames = GameChooser.getPlayerNames();
+        if (existingNames != null && existingNames[0] != null && existingNames[1] != null) {
+            return existingNames;
+        }
+
+        // If no existing names, prompt for them
+        String player1Name = JOptionPane.showInputDialog(null,
+                "Enter Player 1's name:",
+                "Player 1",
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (player1Name == null || player1Name.trim().isEmpty()) {
+            player1Name = "Player 1";
+        }
+
+        String player2Name = JOptionPane.showInputDialog(null,
+                "Enter Player 2's name:",
+                "Player 2",
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (player2Name == null || player2Name.trim().isEmpty()) {
+            player2Name = "Player 2";
+        }
+
+        return new String[] { player1Name, player2Name };
+    }
+
+    /**
      * Initializes the demo.
      */
     private static void initialize() {
+        // Get player names from GameChooser
+        String[] playerNames = GameChooser.getPlayerNames();
+
         display = new Display(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
-
-        // Create a grid demo state with a 10x10 grid
         demoState = new SameGameState(10, 10);
+        demoState.setDisplay(display);
 
-        // Add key listener
+        // Set player names
+        demoState.setPlayerNames(playerNames[0], playerNames[1]);
+
         display.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -100,6 +137,9 @@ public class SameGameLauncher {
                 break;
             case KeyEvent.VK_C:
                 demoState.handleInput("C");
+                break;
+            case KeyEvent.VK_M:
+                demoState.handleInput("M");
                 break;
             case KeyEvent.VK_ESCAPE:
                 running = false;
