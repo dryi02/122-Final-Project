@@ -94,6 +94,9 @@ public class BejeweledLauncher {
         case KeyEvent.VK_SPACE:
             demoState.handleInput("SPACE");
             break;
+        case KeyEvent.VK_R:
+            demoState.handleInput("R");
+            break;
         case KeyEvent.VK_ESCAPE:
             running = false;
             break;

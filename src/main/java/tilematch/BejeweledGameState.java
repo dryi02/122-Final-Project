@@ -12,6 +12,10 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+
 /**
  * A demonstration class that shows a grid with blocks that can be interacted
  * with.
@@ -36,9 +40,10 @@ public class BejeweledGameState extends GameState {
     private int swapRow = -1;
     private int swapCol = -1;
     private boolean swapMode = false;
-    private String message = "Click arrow keys to move selection";
-    private int score = 0;
-    private boolean allowInitialMatches = true;
+    private String message = getCurrPlayerName() + "'s Turn!";
+    private String message2 = "Click arrow keys to move selection";
+    private String message3 = "Score: "+ getCurrPlayerScore();
+    private boolean playerOneFinished = false;
 
     /**
      * Creates a new BejeweledGameState with the specified dimensions.
@@ -103,8 +108,6 @@ public class BejeweledGameState extends GameState {
             // If we couldn't generate a valid grid, just use a simple pattern
             createPatternedGrid();
         }
-
-        message = "Grid initialized without matches";
     }
 
     /**
@@ -201,29 +204,32 @@ public class BejeweledGameState extends GameState {
             case "UP":
                 if (selectedRow > 0) {
                     selectedRow--;
-                    message = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
+                    message2 = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
                 }
                 break;
             case "DOWN":
                 if (selectedRow < grid.getRows() - 1) {
                     selectedRow++;
-                    message = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
+                    message2 = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
                 }
                 break;
             case "LEFT":
                 if (selectedCol > 0) {
                     selectedCol--;
-                    message = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
+                    message2 = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
                 }
                 break;
             case "RIGHT":
                 if (selectedCol < grid.getColumns() - 1) {
                     selectedCol++;
-                    message = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
+                    message2 = "Selected position: (" + selectedRow + ", " + selectedCol + ")";
                 }
                 break;
             case "SPACE":
                 swapBlocks();
+                break;
+            case "R":
+                randomizeGrid();
                 break;
         }
     }
@@ -231,10 +237,6 @@ public class BejeweledGameState extends GameState {
     /**
      * Toggles whether initial matches are allowed when randomizing the grid.
      */
-    private void toggleAllowInitialMatches() {
-        allowInitialMatches = !allowInitialMatches;
-        message = "Initial matches " + (allowInitialMatches ? "allowed" : "not allowed") + " when randomizing";
-    }
 
     /**
      * Toggles swap mode on/off.
@@ -244,9 +246,6 @@ public class BejeweledGameState extends GameState {
         if (swapMode) {
             swapRow = -1;
             swapCol = -1;
-            message = "Swap mode ON. Select first block.";
-        } else {
-            message = "Swap mode OFF.";
         }
     }
 
@@ -255,7 +254,7 @@ public class BejeweledGameState extends GameState {
      */
     private void swapBlocks() {
         if (!grid.isOccupied(selectedRow, selectedCol)) {
-            message = "No block to swap at current position.";
+            message2 = "No block to swap at current position.";
             return;
         }
 
@@ -263,19 +262,19 @@ public class BejeweledGameState extends GameState {
             // First block selected
             swapRow = selectedRow;
             swapCol = selectedCol;
-            message = "First block selected at (" + swapRow + ", " + swapCol + "). Select second block.";
+            message2 = "First block selected at (" + swapRow + ", " + swapCol + "). Select second block.";
         } else {
             // Second block selected, check if it's adjacent
             boolean isAdjacent = (Math.abs(selectedRow - swapRow) == 1 && selectedCol == swapCol) ||
                     (Math.abs(selectedCol - swapCol) == 1 && selectedRow == swapRow);
 
             if (!isAdjacent) {
-                message = "Blocks must be adjacent to swap.";
+                message2 = "Blocks must be adjacent to swap.";
                 return;
             }
 
             if (!grid.isOccupied(selectedRow, selectedCol)) {
-                message = "No block to swap at second position.";
+                message2 = "No block to swap at second position.";
                 return;
             }
 
@@ -305,9 +304,12 @@ public class BejeweledGameState extends GameState {
                 grid.placeBlock(block1, swapRow, swapCol);
                 grid.placeBlock(block2, selectedRow, selectedCol);
 
-                message = "No matches found. Swap reversed.";
+                message2 = "No matches found. Swap reversed.";
             } else {
-                message = "Blocks swapped and matches found!";
+                message2 = "Blocks swapped and matches found!";
+                switchPlayers();
+                message = getCurrPlayerName() + "'s Turn!";
+                message3 = "Score: " + getCurrPlayerScore();
             }
 
             // Reset swap selection
@@ -344,20 +346,17 @@ public class BejeweledGameState extends GameState {
                 grid.removeBlock(p.x, p.y);
             }
 
-            // Update score
-            score += allMatches.size() * 10;
-            message = "Popped " + allMatches.size() + " blocks! Score: " + score;
+            addCurrPlayerScore(allMatches.size() * 10);
+            message2 = "Popped " + allMatches.size() + " blocks!";
 
             // Apply gravity and fill empty spaces
             applyGravity();
-            fillEmptySpaces();
 
+            fillEmptySpaces();
             // Check for cascading matches
             checkCascadingMatches();
-
             return true;
         }
-
         return false;
     }
 
@@ -365,90 +364,24 @@ public class BejeweledGameState extends GameState {
      * Checks for cascading matches after blocks have fallen.
      */
     private void checkCascadingMatches() {
-        // Use a small delay to allow for animation if needed
+
+        try {
+            Thread.sleep(300); 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         boolean moreMatches = checkForMatches();
-
         if (moreMatches) {
-            message += " Cascade bonus!";
+            message2 += " Cascade bonus!";
+            message3 = "Score: " + getCurrPlayerScore();
         }
+
     }
 
-    /**
-     * Manually checks the entire board for matches.
-     */
-    private void checkAllMatches() {
-        boolean matchesFound = checkForMatches();
 
-        if (!matchesFound) {
-            message = "No matches found on the board.";
-        }
-    }
 
-    /**
-     * Toggles a block at the selected position.
-     * If there's a block, it will be removed. If there's no block, a new one will
-     * be added.
-     */
-    private void toggleBlock() {
-        if (grid.isOccupied(selectedRow, selectedCol)) {
-            grid.removeBlock(selectedRow, selectedCol);
-            message = "Removed block at (" + selectedRow + ", " + selectedCol + ")";
-        } else {
-            Color color = BLOCK_COLORS[RANDOM.nextInt(BLOCK_COLORS.length)];
-            Block block = new Block(selectedRow, selectedCol, Block.BlockType.STANDARD, color);
-            grid.placeBlock(block, selectedRow, selectedCol);
-            message = "Added block at (" + selectedRow + ", " + selectedCol + ")";
-        }
-    }
-
-    /**
-     * Pops (removes) all connected blocks of the same color at the selected
-     * position.
-     */
-    private void popConnectedBlocks() {
-        if (!grid.isOccupied(selectedRow, selectedCol)) {
-            message = "No block to pop at (" + selectedRow + ", " + selectedCol + ")";
-            return;
-        }
-
-        Block selectedBlock = grid.getBlock(selectedRow, selectedCol);
-        Color targetColor = selectedBlock.getColor();
-
-        // Find all connected blocks of the same color using BFS
-        Set<Point> connectedBlocks = findConnectedBlocks(selectedRow, selectedCol, targetColor);
-
-        // Only pop if there are at least MIN_BLOCKS_TO_POP connected blocks
-        if (connectedBlocks.size() >= MIN_BLOCKS_TO_POP) {
-            // Remove all connected blocks
-            for (Point p : connectedBlocks) {
-                grid.removeBlock(p.x, p.y);
-            }
-
-            // Update score and message
-            score += connectedBlocks.size() * 10;
-            message = "Popped " + connectedBlocks.size() + " blocks! Score: " + score;
-
-            // Apply gravity to make blocks fall
-            applyGravity();
-
-            // Fill empty spaces at the top with new blocks
-            //fillEmptySpaces();
-
-            // Check for cascading matches
-            //checkCascadingMatches();
-        } else {
-            message = "Need at least " + MIN_BLOCKS_TO_POP + " connected blocks to pop";
-        }
-    }
-
-    /**
-     * Finds all connected blocks of the same color using Breadth-First Search.
-     * 
-     * @param startRow    The starting row
-     * @param startCol    The starting column
-     * @param targetColor The color to match
-     * @return A set of points representing connected blocks
-     */
+   
     private Set<Point> findConnectedBlocks(int startRow, int startCol, Color targetColor) {
         Set<Point> visited = new HashSet<>();
         Queue<Point> queue = new LinkedList<>();
@@ -537,8 +470,9 @@ public class BejeweledGameState extends GameState {
     private void randomizeGrid() {
         grid.clear();
         initializeGrid();
-        score = 0;
-        message = "Grid randomized" + (allowInitialMatches ? " with" : " without") + " initial matches";
+        resetAllPlayers();
+        message = getCurrPlayerName() + "'s Turn!";
+        message3 = "Score: " + getCurrPlayerScore();
     }
 
     /**
@@ -546,8 +480,8 @@ public class BejeweledGameState extends GameState {
      */
     private void clearGrid() {
         grid.clear();
-        score = 0;
-        message = "Grid cleared";
+        resetActivePlayer();
+        message2 = "Grid cleared";
     }
 
     @Override
@@ -564,21 +498,15 @@ public class BejeweledGameState extends GameState {
         int textX = grid.getXOffset() + grid.getColumns() * grid.getCellSize() + 20;
         int textY = grid.getYOffset() + 30;
 
-        g.drawString("Grid Demo", textX, textY);
+        g.drawString("Bejeweled", textX, textY);
         g.drawString(message, textX, textY + 30);
-        g.drawString("Score: " + score, textX, textY + 60);
-        g.drawString("Initial Matches: " + (allowInitialMatches ? "Allowed" : "Not Allowed"), textX, textY + 80);
-
+        g.drawString(message2, textX, textY + 60);
+        g.drawString(message3, textX, textY + 90);
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
         g.drawString("Space: Toggle block/Confirm swap", textX, textY + 160);
-        g.drawString("S: Toggle swap mode", textX, textY + 180);
-        g.drawString("P: Pop connected blocks", textX, textY + 200);
-        g.drawString("A: Check all matches", textX, textY + 220);
-        g.drawString("M: Toggle initial matches", textX, textY + 240);
-        g.drawString("R: Randomize grid", textX, textY + 260);
-        g.drawString("C: Clear grid", textX, textY + 280);
+        g.drawString("R: New Game", textX, textY + 180);
 
         // Draw selection highlight
         if (selectedRow >= 0 && selectedCol >= 0) {
@@ -602,11 +530,37 @@ public class BejeweledGameState extends GameState {
             g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
         }
     }
+//    protected void checkSwitchPlayer() {
+//    	if(hasMatches() && this.playerOneFinished == false) {
+//    		switchPlayers();
+//    		this.playerOneFinished = true;
+//    		message =  getCurrPlayerName() + "'s Turn!";
+//    		message3 = "Score: " + getCurrPlayerScore();
+//    	}
+//    }
 
     @Override
     protected void checkGameOver() {
-        // No game over condition in this demo
+        if (!hasMatches() && playerOneFinished) {
+            int scoreP1 = players.get(0).getScore();
+            int scoreP2 = players.get(1).getScore();
+            
+            if (scoreP1 > scoreP2) {
+                message = "Player One Wins!";
+            } else if (scoreP2 > scoreP1) {
+                message = "Player Two Wins!";
+            } else {
+                message = "It's a Tie!";
+            }
+            message2 = "Player 1 Score: " + scoreP1 + " | Player 2 Score: " + scoreP2;
+
+            // Reset game state
+            playerOneFinished = false;
+            resetAllPlayers();
+            clearGrid();
+        }
     }
+
 
     @Override
     public void render(Graphics g) {
