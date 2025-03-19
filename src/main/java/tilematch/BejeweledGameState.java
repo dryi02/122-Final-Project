@@ -344,12 +344,6 @@ public class BejeweledGameState extends GameState {
                 message2 = "No matches found. Swap reversed.";
             } else {
                 message2 = "Blocks swapped and matches found!";
-                // Switch players and reset timer after successful move
-                switchPlayers();
-                currentPlayerTime = PLAYER_TIME_LIMIT;
-                lastTimeUpdate = System.currentTimeMillis();
-                message = getCurrPlayerName() + "'s Turn!";
-                message3 = "Score: " + getCurrPlayerScore();
             }
 
             // Reset swap selection
@@ -500,17 +494,25 @@ public class BejeweledGameState extends GameState {
         g.drawString("Bejeweled", textX, textY);
         g.drawString(message, textX, textY + 30);
         g.drawString(message2, textX, textY + 60);
-        g.drawString(message3, textX, textY + 90);
-        g.drawString("Player Time: " + currentPlayerTime + "s", textX, textY + 120);
+
+        // Show both players' scores
+        g.drawString(players.get(0).getName() + ": " + players.get(0).getScore(), textX, textY + 90);
+        g.drawString(players.get(1).getName() + ": " + players.get(1).getScore(), textX, textY + 120);
+
+        // Show wins
+        g.drawString("Wins - " + players.get(0).getName() + ": " + player1Wins + " | " +
+                players.get(1).getName() + ": " + player2Wins, textX, textY + 150);
+
+        g.drawString("Player Time: " + currentPlayerTime + "s", textX, textY + 180);
         g.drawString("Game Time: " + (globalTime / 60) + ":" + String.format("%02d", globalTime % 60), textX,
-                textY + 150);
+                textY + 210);
 
         g.setFont(new Font("Arial", Font.PLAIN, 14));
-        g.drawString("Controls:", textX, textY + 180);
-        g.drawString("Arrow Keys: Move selection", textX, textY + 200);
-        g.drawString("Space: Toggle block/Confirm swap", textX, textY + 220);
-        g.drawString("R: New Game", textX, textY + 240);
-        g.drawString("M: Return to Menu", textX, textY + 260);
+        g.drawString("Controls:", textX, textY + 240);
+        g.drawString("Arrow Keys: Move selection", textX, textY + 260);
+        g.drawString("Space: Toggle block/Confirm swap", textX, textY + 280);
+        g.drawString("R: New Game", textX, textY + 300);
+        g.drawString("M: Return to Menu", textX, textY + 320);
 
         // Draw selection highlight
         if (selectedRow >= 0 && selectedCol >= 0) {
