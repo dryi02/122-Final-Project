@@ -2,6 +2,10 @@
 
 A flexible Java-based environment for creating and playing match-3 style tile matching games.
 
+Created By: Armon Amini, Daniel Robert Yi, Justin Chan, Susannah Liu, and Matthew Duong
+
+Documentation (UCI Emails Only): https://docs.google.com/document/d/1vad8RvlvUfk1nLkANLdCQICH2ElEYcd8d_VfBfBbcE4/
+  
 ## Overview
 
 This project provides a modular framework for developing tile matching games. The environment includes two different games: Bejeweled and SameGame, each with unique mechanics and gameplay styles.
