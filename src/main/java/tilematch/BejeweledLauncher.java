@@ -22,40 +22,7 @@ public class BejeweledLauncher extends GameLauncher {
         launcher.run();
     }
 
-    /**
-     * Gets player names through dialog boxes.
-     * 
-     * @return Array containing player 1 and player 2 names
-     */
-    @Override
-    protected String[] getPlayerNames() {
-        // Check if we already have player names
-        String[] existingNames = GameChooser.getPlayerNames();
-        if (existingNames != null && existingNames[0] != null && existingNames[1] != null) {
-            return existingNames;
-        }
-
-        // If no existing names, prompt for them
-        String player1Name = JOptionPane.showInputDialog(null,
-                "Enter Player 1's name:",
-                "Player 1",
-                JOptionPane.QUESTION_MESSAGE);
-
-        if (player1Name == null || player1Name.trim().isEmpty()) {
-            player1Name = "Player 1";
-        }
-
-        String player2Name = JOptionPane.showInputDialog(null,
-                "Enter Player 2's name:",
-                "Player 2",
-                JOptionPane.QUESTION_MESSAGE);
-
-        if (player2Name == null || player2Name.trim().isEmpty()) {
-            player2Name = "Player 2";
-        }
-
-        return new String[] { player1Name, player2Name };
-    }
+   
 
     @Override
     protected void initialize() {

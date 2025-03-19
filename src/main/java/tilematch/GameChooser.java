@@ -159,7 +159,7 @@ public class GameChooser {
             g.drawString("Controls:", 40, 290);
             g.setFont(new Font("Arial", Font.PLAIN, 12));
             String[] controls = {
-                    "↑↓ Arrow Keys: Navigate menu",
+                    "Arrow Keys: Navigate menu",
                     "ENTER: Select game",
             };
             int controlY = 310;
