@@ -23,11 +23,6 @@ import java.awt.event.ActionEvent;
  * interaction.
  */
 public class BejeweledGameState extends GameState {
-    private static final Random RANDOM = new Random();
-    private static final Color[] BLOCK_COLORS = {
-            Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW,
-            Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK
-    };
 
     // Minimum number of connected blocks required for popping
     private static final int MIN_BLOCKS_TO_POP = 3;
@@ -35,25 +30,16 @@ public class BejeweledGameState extends GameState {
     // Maximum attempts to generate a grid without matches
     private static final int MAX_GENERATION_ATTEMPTS = 100;
 
-    private static final int PLAYER_TIME_LIMIT = 30; // 30 seconds per player
-    private static final int GLOBAL_TIME_LIMIT = 300; // 5 minutes in seconds
+    private static final int PLAYER_TIME_LIMIT = 20; // 30 seconds per player
+    private static final int GLOBAL_TIME_LIMIT = 30; // 5 minutes in seconds
     private int currentPlayerTime = PLAYER_TIME_LIMIT;
     private int globalTime = GLOBAL_TIME_LIMIT;
     private long lastTimeUpdate = System.currentTimeMillis();
     private boolean isTimerRunning = true;
     private boolean isGameOver = false;
-    private int player1Wins = 0;
-    private int player2Wins = 0;
 
-    private int selectedRow = -1;
-    private int selectedCol = -1;
-    private int swapRow = -1;
-    private int swapCol = -1;
-    private boolean swapMode = false;
-    private String message = getCurrPlayerName() + "'s Turn!";
     private String message2 = "Click arrow keys to move selection";
     private String message3 = "Score: " + getCurrPlayerScore();
-    private boolean playerOneFinished = false;
 
     /**
      * Sets custom names for both players.
@@ -61,11 +47,11 @@ public class BejeweledGameState extends GameState {
      * @param player1Name Name for Player 1
      * @param player2Name Name for Player 2
      */
-    public void setPlayerNames(String player1Name, String player2Name) {
-        players.get(0).setName(player1Name);
-        players.get(1).setName(player2Name);
-        message = getCurrPlayerName() + "'s Turn!";
-    }
+    // public void setPlayerNames(String player1Name, String player2Name) {
+    //     players.get(0).setName(player1Name);
+    //     players.get(1).setName(player2Name);
+    //     message = getCurrPlayerName() + "'s Turn!";
+    // }
 
     /**
      * Creates a new BejeweledGameState with the specified dimensions.
@@ -76,9 +62,6 @@ public class BejeweledGameState extends GameState {
     public BejeweledGameState(int rows, int columns) {
         super(rows, columns);
         // Load win counts from GameChooser
-        int[] wins = GameChooser.getPlayerWins();
-        player1Wins = wins[0];
-        player2Wins = wins[1];
         initializeGrid();
     }
 
@@ -424,7 +407,7 @@ public class BejeweledGameState extends GameState {
     /**
      * Randomizes the grid with new blocks.
      */
-    private void randomizeGrid() {
+    public void randomizeGrid() {
         grid.clear();
         initializeGrid();
         resetAllPlayers();
@@ -441,9 +424,9 @@ public class BejeweledGameState extends GameState {
     /**
      * Clears all blocks from the grid.
      */
-    private void clearGrid() {
-        grid.clear();
-        resetActivePlayer();
+    @Override
+	public void clearGrid() {
+    	super.clearGrid();
         message2 = "Grid cleared";
     }
 
@@ -468,7 +451,7 @@ public class BejeweledGameState extends GameState {
                 }
 
                 // Check player timer
-                if (currentPlayerTime <= 0) {
+                else if (currentPlayerTime <= 0) {
                     // Time's up for current player
                     isTimerRunning = false;
                     message2 = "Time's up! Switching players...";
@@ -483,7 +466,7 @@ public class BejeweledGameState extends GameState {
     }
 
     @Override
-    protected void renderUI(Graphics g) {
+    protected void renderInstructions(Graphics g) {
         // Draw instructions
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
@@ -513,28 +496,6 @@ public class BejeweledGameState extends GameState {
         g.drawString("Space: Toggle block/Confirm swap", textX, textY + 280);
         g.drawString("R: New Game", textX, textY + 300);
         g.drawString("M: Return to Menu", textX, textY + 320);
-
-        // Draw selection highlight
-        if (selectedRow >= 0 && selectedCol >= 0) {
-            g.setColor(new Color(255, 255, 255, 100)); // Semi-transparent white
-            int x = grid.getXOffset() + selectedCol * grid.getCellSize();
-            int y = grid.getYOffset() + selectedRow * grid.getCellSize();
-            g.fillRect(x, y, grid.getCellSize(), grid.getCellSize());
-
-            g.setColor(Color.WHITE);
-            g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
-        }
-
-        // Draw swap selection highlight if in swap mode and first block is selected
-        if (swapMode && swapRow >= 0 && swapCol >= 0) {
-            g.setColor(new Color(255, 255, 0, 100)); // Semi-transparent yellow
-            int x = grid.getXOffset() + swapCol * grid.getCellSize();
-            int y = grid.getYOffset() + swapRow * grid.getCellSize();
-            g.fillRect(x, y, grid.getCellSize(), grid.getCellSize());
-
-            g.setColor(Color.YELLOW);
-            g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
-        }
     }
     // protected void checkSwitchPlayer() {
     // if(hasMatches() && this.playerOneFinished == false) {
@@ -546,7 +507,7 @@ public class BejeweledGameState extends GameState {
     // }
 
     @Override
-    protected void checkGameOver() {
+    protected boolean checkGameOver() {
         if ((!hasMatches() && playerOneFinished) || isGameOver) {
             int scoreP1 = players.get(0).getScore();
             int scoreP2 = players.get(1).getScore();
@@ -568,16 +529,19 @@ public class BejeweledGameState extends GameState {
             // Reset game state after displaying final scores
             playerOneFinished = false;
             isTimerRunning = false;
+            resetAllPlayers();
             clearGrid();
+            return true;
         }
+        return false;
     }
 
-    @Override
-    public void render(Graphics g) {
-        // Render the grid (which includes the blocks)
-        grid.render(g);
-
-        // Render UI elements
-        renderUI(g);
-    }
+//    @Override
+//    public void render(Graphics g) {
+//        // Render the grid (which includes the blocks)
+//        grid.render(g);
+//
+//        // Render UI elements
+//        renderUI(g);
+//    }
 }

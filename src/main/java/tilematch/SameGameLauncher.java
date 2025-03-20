@@ -32,8 +32,8 @@ public class SameGameLauncher extends GameLauncher {
         gameState.setDisplay(display);
 
         // Set player names
-        ((SameGameState) gameState).setPlayerNames(playerNames[0], playerNames[1]);
-
+        String currPlayer = ((SameGameState) gameState).setPlayerNames(playerNames[0], playerNames[1]);
+        ((SameGameState) gameState).setMessage(currPlayer + "'s Turn!");
         display.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

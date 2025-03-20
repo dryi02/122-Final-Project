@@ -500,72 +500,72 @@ public class GridDemoState extends GameState {
      * @param targetColor The color to match
      * @return A set of points representing connected blocks
      */
-    private Set<Point> findConnectedBlocks(int startRow, int startCol, Color targetColor) {
-        Set<Point> visited = new HashSet<>();
-        Queue<Point> queue = new LinkedList<>();
+    // private Set<Point> findConnectedBlocks(int startRow, int startCol, Color targetColor) {
+    //     Set<Point> visited = new HashSet<>();
+    //     Queue<Point> queue = new LinkedList<>();
 
-        // Add the starting point
-        Point start = new Point(startRow, startCol);
-        queue.add(start);
-        visited.add(start);
+    //     // Add the starting point
+    //     Point start = new Point(startRow, startCol);
+    //     queue.add(start);
+    //     visited.add(start);
 
-        // Define the four directions: up, right, down, left
-        int[][] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+    //     // Define the four directions: up, right, down, left
+    //     int[][] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
 
-        // BFS to find all connected blocks of the same color
-        while (!queue.isEmpty()) {
-            Point current = queue.poll();
+    //     // BFS to find all connected blocks of the same color
+    //     while (!queue.isEmpty()) {
+    //         Point current = queue.poll();
 
-            // Check all four adjacent positions
-            for (int[] dir : directions) {
-                int newRow = current.x + dir[0];
-                int newCol = current.y + dir[1];
-                Point newPoint = new Point(newRow, newCol);
+    //         // Check all four adjacent positions
+    //         for (int[] dir : directions) {
+    //             int newRow = current.x + dir[0];
+    //             int newCol = current.y + dir[1];
+    //             Point newPoint = new Point(newRow, newCol);
 
-                // Check if the position is valid and not visited
-                if (grid.isValidPosition(newRow, newCol) &&
-                        grid.isOccupied(newRow, newCol) &&
-                        !visited.contains(newPoint)) {
+    //             // Check if the position is valid and not visited
+    //             if (grid.isValidPosition(newRow, newCol) &&
+    //                     grid.isOccupied(newRow, newCol) &&
+    //                     !visited.contains(newPoint)) {
 
-                    Block block = grid.getBlock(newRow, newCol);
+    //                 Block block = grid.getBlock(newRow, newCol);
 
-                    // If the block has the same color, add it to the queue
-                    if (block.getColor().equals(targetColor)) {
-                        queue.add(newPoint);
-                        visited.add(newPoint);
-                    }
-                }
-            }
-        }
+    //                 // If the block has the same color, add it to the queue
+    //                 if (block.getColor().equals(targetColor)) {
+    //                     queue.add(newPoint);
+    //                     visited.add(newPoint);
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        return visited;
-    }
+    //     return visited;
+    // }
 
-    /**
-     * Applies gravity to make blocks fall after popping.
-     */
-    private void applyGravity() {
-        // For each column
-        for (int col = 0; col < grid.getColumns(); col++) {
-            // Start from the bottom row
-            for (int row = grid.getRows() - 1; row >= 0; row--) {
-                // If the cell is empty
-                if (!grid.isOccupied(row, col)) {
-                    // Find the first non-empty cell above
-                    int aboveRow = row - 1;
-                    while (aboveRow >= 0) {
-                        if (grid.isOccupied(aboveRow, col)) {
-                            // Move the block down
-                            Block block = grid.removeBlock(aboveRow, col);
-                            grid.placeBlock(block, row, col);
-                            break;
-                        }
-                        aboveRow--;
-                    }
-                }
-            }
-        }
-    }
+    // /**
+    //  * Applies gravity to make blocks fall after popping.
+    //  */
+    // private void applyGravity() {
+    //     // For each column
+    //     for (int col = 0; col < grid.getColumns(); col++) {
+    //         // Start from the bottom row
+    //         for (int row = grid.getRows() - 1; row >= 0; row--) {
+    //             // If the cell is empty
+    //             if (!grid.isOccupied(row, col)) {
+    //                 // Find the first non-empty cell above
+    //                 int aboveRow = row - 1;
+    //                 while (aboveRow >= 0) {
+    //                     if (grid.isOccupied(aboveRow, col)) {
+    //                         // Move the block down
+    //                         Block block = grid.removeBlock(aboveRow, col);
+    //                         grid.placeBlock(block, row, col);
+    //                         break;
+    //                     }
+    //                     aboveRow--;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     /**
      * Fills empty spaces at the top of the grid with new random blocks.
@@ -585,7 +585,7 @@ public class GridDemoState extends GameState {
     /**
      * Randomizes the grid with new blocks.
      */
-    private void randomizeGrid() {
+    public void randomizeGrid() {
         grid.clear();
         initializeGrid();
         score = 0;
@@ -595,7 +595,7 @@ public class GridDemoState extends GameState {
     /**
      * Clears all blocks from the grid.
      */
-    private void clearGrid() {
+    public void clearGrid() {
         grid.clear();
         score = 0;
         message = "Grid cleared";
@@ -655,8 +655,9 @@ public class GridDemoState extends GameState {
     }
 
     @Override
-    protected void checkGameOver() {
+    protected boolean checkGameOver() {
         // No game over condition in this demo
+    	return false;
     }
 
     @Override
@@ -667,4 +668,11 @@ public class GridDemoState extends GameState {
         // Render UI elements
         renderUI(g);
     }
+
+	@Override
+	protected void renderInstructions(Graphics g) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -34,8 +34,8 @@ public class BejeweledLauncher extends GameLauncher {
         gameState.setDisplay(display);
 
         // Set player names
-        ((BejeweledGameState) gameState).setPlayerNames(playerNames[0], playerNames[1]);
-
+        String currPlayer = ((BejeweledGameState) gameState).setPlayerNames(playerNames[0], playerNames[1]);
+        ((BejeweledGameState) gameState).setMessage(currPlayer + "'s Turn!");
         display.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

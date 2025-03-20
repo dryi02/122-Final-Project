@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -23,6 +24,20 @@ public abstract class GameState {
     protected boolean gameOver;
     protected int currPlayerIndex = 0;
     protected Display display;
+    protected String message = "";
+    protected static final Random RANDOM = new Random();
+    protected static final Color[] BLOCK_COLORS = {
+            Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW,
+            Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK
+    };
+    protected int selectedRow = -1;
+    protected int selectedCol = -1;
+    protected int swapRow = -1;
+    protected int swapCol = -1;
+    protected int player1Wins = 0;
+    protected int player2Wins = 0;
+    protected boolean swapMode = false;
+    protected boolean playerOneFinished = false;
 
     /**
      * Creates a new GameState with the specified grid dimensions.
@@ -40,6 +55,10 @@ public abstract class GameState {
         this.timer = new Timer();
         this.activeBlocks = new ArrayList<>();
         this.gameOver = false;
+        int[] wins = GameChooser.getPlayerWins();
+        player1Wins = wins[0];
+        player2Wins = wins[1];
+        
 
     }
 
@@ -55,7 +74,7 @@ public abstract class GameState {
 
         timer.update(deltaTime);
         updateGame(deltaTime);
-        checkGameOver();
+        gameOver = checkGameOver();
     }
 
     /**
@@ -67,11 +86,11 @@ public abstract class GameState {
         grid.render(g);
 
         // Render active blocks with proper coordinates
-        for (Block block : activeBlocks) {
-            int x = grid.getXOffset() + block.getColumn() * grid.getCellSize();
-            int y = grid.getYOffset() + block.getRow() * grid.getCellSize();
-            block.render(g, x, y, grid.getCellSize());
-        }
+//        for (Block block : activeBlocks) {
+//            int x = grid.getXOffset() + block.getColumn() * grid.getCellSize();
+//            int y = grid.getYOffset() + block.getRow() * grid.getCellSize();
+//            block.render(g, x, y, grid.getCellSize());
+//        }
 
         renderUI(g);
     }
@@ -95,12 +114,48 @@ public abstract class GameState {
      *
      * @param g The graphics context to render to
      */
-    protected abstract void renderUI(Graphics g);
+    protected void renderUI(Graphics g) {
+        renderInstructions(g);
+        renderSelectionHighlight(g);
+        renderSwapSelectionHighlight(g);
+    }
+    
+    protected abstract void renderInstructions(Graphics g);
+    
+    protected void renderSelectionHighlight(Graphics g) {
+        if (selectedRow >= 0 && selectedCol >= 0) {
+            g.setColor(new Color(255, 255, 255, 100)); // Semi-transparent white
+            int x = grid.getXOffset() + selectedCol * grid.getCellSize();
+            int y = grid.getYOffset() + selectedRow * grid.getCellSize();
+            g.fillRect(x, y, grid.getCellSize(), grid.getCellSize());
+
+            g.setColor(Color.WHITE);
+            g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
+        }
+    }
+
+    protected void renderSwapSelectionHighlight(Graphics g) {
+        if (swapMode && swapRow >= 0 && swapCol >= 0) {
+            g.setColor(new Color(255, 255, 0, 100)); // Semi-transparent yellow
+            int x = grid.getXOffset() + swapCol * grid.getCellSize();
+            int y = grid.getYOffset() + swapRow * grid.getCellSize();
+            g.fillRect(x, y, grid.getCellSize(), grid.getCellSize());
+
+            g.setColor(Color.YELLOW);
+            g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
+        }
+    }
+
+
+    
+    public abstract void randomizeGrid();
+
 
     /**
      * Checks if the game is over.
+     * @return 
      */
-    protected abstract void checkGameOver();
+    protected abstract boolean checkGameOver();
     
      protected Set<Point> findConnectedBlocks(int startRow, int startCol, Color targetColor) {
         Set<Point> visited = new HashSet<>();
@@ -214,4 +269,23 @@ public abstract class GameState {
     public void setDisplay(Display display) {
         this.display = display;
     }
+    public String setPlayerNames(String player1Name, String player2Name) {
+        players.get(0).setName(player1Name);
+        players.get(1).setName(player2Name);
+        return getCurrPlayerName() + "'s Turn!";
+    }
+    public void setMessage(String message) {
+    	this.message = message;
+    }
+    
+    public void clearGrid() {
+        grid.clear();
+        resetActivePlayer();
+    }
+    
+    
+    
+
+    
+    
 }

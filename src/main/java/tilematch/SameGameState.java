@@ -18,23 +18,9 @@ import javax.swing.SwingUtilities;
  * interaction.
  */
 public class SameGameState extends GameState {
-    private static final Random RANDOM = new Random();
-    private static final Color[] BLOCK_COLORS = {
-            Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW,
-            Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK
-    };
-
-    private int selectedRow = -1;
-    private int selectedCol = -1;
-    private int swapRow = -1;
-    private int swapCol = -1;
-    private boolean swapMode = false;
-    private String message = getCurrPlayerName() + "'s Turn!";
     private String message2 = "Turns: " + getCurrPlayerScore();
     private Grid gridSave;
-    private boolean playerOneFinished = false;
-    private int player1Wins = 0;
-    private int player2Wins = 0;
+
 
     /**
      * Sets custom names for both players.
@@ -42,11 +28,11 @@ public class SameGameState extends GameState {
      * @param player1Name Name for Player 1
      * @param player2Name Name for Player 2
      */
-    public void setPlayerNames(String player1Name, String player2Name) {
-        players.get(0).setName(player1Name);
-        players.get(1).setName(player2Name);
-        message = getCurrPlayerName() + "'s Turn!";
-    }
+    // public void setPlayerNames(String player1Name, String player2Name) {
+    //     players.get(0).setName(player1Name);
+    //     players.get(1).setName(player2Name);
+    //     message = getCurrPlayerName() + "'s Turn!";
+    // }
 
     /**
      * Creates a new GridDemoState with the specified dimensions.
@@ -57,9 +43,6 @@ public class SameGameState extends GameState {
     public SameGameState(int rows, int columns) {
         super(rows, columns);
         // Load win counts from GameChooser
-        int[] wins = GameChooser.getPlayerWins();
-        player1Wins = wins[0];
-        player2Wins = wins[1];
         gridSave = new Grid(rows, columns);
         initializeGrid();
     }
@@ -199,7 +182,7 @@ public class SameGameState extends GameState {
     /**
      * Randomizes the grid with new blocks.
      */
-    private void randomizeGrid() {
+    public void randomizeGrid() {
         grid.clear();
         initializeGrid();
         message = getCurrPlayerName() + "'s Turn!";
@@ -211,9 +194,9 @@ public class SameGameState extends GameState {
     /**
      * Clears all blocks from the grid.
      */
-    private void clearGrid() {
-        grid.clear();
-        resetActivePlayer();
+    @Override
+	public void clearGrid() {
+    	super.clearGrid();
         message = "Grid cleared";
     }
 
@@ -222,9 +205,13 @@ public class SameGameState extends GameState {
         // No game logic to update in this demo
     }
 
-    @Override
-    protected void renderUI(Graphics g) {
-        // Draw instructions
+//    protected void renderUI(Graphics g) {
+//        renderInstructions(g);
+//        renderSelectionHighlight(g);
+//        renderSwapSelectionHighlight(g);
+//    }
+
+    protected void renderInstructions(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
 
@@ -234,6 +221,7 @@ public class SameGameState extends GameState {
         g.drawString("Same Game", textX, textY);
         g.drawString(message, textX, textY + 30);
         g.drawString(message2, textX, textY + 60);
+
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
@@ -241,28 +229,6 @@ public class SameGameState extends GameState {
         g.drawString("R: New Game", textX, textY + 180);
         g.drawString("C: Clear grid", textX, textY + 200);
         g.drawString("M: Return to Menu", textX, textY + 220);
-
-        // Draw selection highlight
-        if (selectedRow >= 0 && selectedCol >= 0) {
-            g.setColor(new Color(255, 255, 255, 100)); // Semi-transparent white
-            int x = grid.getXOffset() + selectedCol * grid.getCellSize();
-            int y = grid.getYOffset() + selectedRow * grid.getCellSize();
-            g.fillRect(x, y, grid.getCellSize(), grid.getCellSize());
-
-            g.setColor(Color.WHITE);
-            g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
-        }
-
-        // Draw swap selection highlight if in swap mode and first block is selected
-        if (swapMode && swapRow >= 0 && swapCol >= 0) {
-            g.setColor(new Color(255, 255, 0, 100)); // Semi-transparent yellow
-            int x = grid.getXOffset() + swapCol * grid.getCellSize();
-            int y = grid.getYOffset() + swapRow * grid.getCellSize();
-            g.fillRect(x, y, grid.getCellSize(), grid.getCellSize());
-
-            g.setColor(Color.YELLOW);
-            g.drawRect(x, y, grid.getCellSize(), grid.getCellSize());
-        }
     }
 
     protected void loadGridSave() {
@@ -284,7 +250,7 @@ public class SameGameState extends GameState {
     }
 
     @Override
-    protected void checkGameOver() {
+    protected boolean checkGameOver() {
         if (grid.isGridEmpty() && playerOneFinished) {
             if (players.get(0).getScore() > players.get(1).getScore()) {
                 message = players.get(1).getName() + " Wins!";
@@ -303,15 +269,17 @@ public class SameGameState extends GameState {
             gridSave.clear();
             switchPlayers();
             resetAllPlayers();
+            return true;
         }
+        return false;
     }
 
-    @Override
-    public void render(Graphics g) {
-        // Render the grid (which includes the blocks)
-        grid.render(g);
-
-        // Render UI elements
-        renderUI(g);
-    }
+//    @Override
+//    public void render(Graphics g) {
+//        // Render the grid (which includes the blocks)
+//        grid.render(g);
+//
+//        // Render UI elements
+//        renderUI(g);
+//    }
 }
