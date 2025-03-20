@@ -75,7 +75,23 @@ The environment consists of several key components:
 ## Running the Game
 
 Method 1:
-   1. Run the TMGE.jar file
+   1. Run the ```TMGE.jar``` file
+
+   If the Jar file does not work:
+      1. Compile the project:
+         ```
+         javac -d bin src/main/java/tilematch/*.java
+         ```
+      
+      2. Compile the Jar File:
+         ```
+         jar cfm TMGE.jar META-INF/MANIFEST.MF -C bin .
+         ```
+      
+      3. Run the Jar File:
+         ```
+         java -jar TMGE.jar
+         ```
 
 
 Method 2:
