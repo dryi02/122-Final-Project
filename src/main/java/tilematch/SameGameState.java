@@ -114,12 +114,6 @@ public class SameGameState extends GameState {
             case "P":
                 popConnectedBlocks();
                 break;
-            case "R":
-                randomizeGrid();
-                break;
-            case "C":
-                clearGrid();
-                break;
             case "M":
                 // Save current stats before returning to menu
                 GameChooser.updatePlayerNames(players.get(0).getName(), players.get(1).getName());
@@ -226,9 +220,7 @@ public class SameGameState extends GameState {
         g.drawString("Controls:", textX, textY + 120);
         g.drawString("Arrow Keys: Move selection", textX, textY + 140);
         g.drawString("P: Pop connected blocks", textX, textY + 160);
-        g.drawString("R: New Game", textX, textY + 180);
-        g.drawString("C: Clear grid", textX, textY + 200);
-        g.drawString("M: Return to Menu", textX, textY + 220);
+        g.drawString("M: Return to Menu", textX, textY + 180);
     }
 
     protected void loadGridSave() {

@@ -69,12 +69,6 @@ public class SameGameLauncher extends GameLauncher {
             case KeyEvent.VK_P:
                 gameState.handleInput("P");
                 break;
-            case KeyEvent.VK_R:
-                gameState.handleInput("R");
-                break;
-            case KeyEvent.VK_C:
-                gameState.handleInput("C");
-                break;
             case KeyEvent.VK_M:
                 gameState.handleInput("M");
                 break;
