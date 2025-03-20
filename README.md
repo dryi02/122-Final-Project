@@ -39,7 +39,6 @@ A time-based match-3 game where players take turns making matches.
 
 - **Arrow Keys**: Move selection cursor
 - **Space**: Select/Confirm block swap
-- **R**: Start new game
 - **M**: Return to menu
 - **ESC**: Exit game
 
@@ -59,8 +58,6 @@ A turn-based game where players take turns removing connected blocks.
 
 - **Arrow Keys**: Move selection cursor
 - **P**: Pop connected blocks
-- **R**: Start new game
-- **C**: Clear grid
 - **M**: Return to menu
 - **ESC**: Exit game
 
