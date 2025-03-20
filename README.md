@@ -78,6 +78,7 @@ Method 1:
    1. Run the ```TMGE.jar``` file
 
    If the Jar file does not work:
+   
       1. Compile the project:
          ```
          javac -d bin src/main/java/tilematch/*.java
