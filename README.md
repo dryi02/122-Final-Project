@@ -77,25 +77,29 @@ The environment consists of several key components:
 Method 1:
    1. Run the ```TMGE.jar``` file
 
-   If the Jar file does not work:
+Method 2:
+If the Jar file does not work:
    
-      1. Compile the project:
+   1. Compile the project:
+      
          ```
          javac -d bin src/main/java/tilematch/*.java
          ```
       
-      2. Compile the Jar File:
+   2. Compile the Jar File:
+      
          ```
          jar cfm TMGE.jar META-INF/MANIFEST.MF -C bin .
          ```
       
-      3. Run the Jar File:
+   3. Run the Jar File:
+      
          ```
          java -jar TMGE.jar
          ```
 
 
-Method 2:
+Method 3:
    1. Compile the project:
 
       ```
