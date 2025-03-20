@@ -19,7 +19,6 @@ public abstract class GameState {
     protected Grid grid;
     protected List<Player> players = new ArrayList<Player>();
     protected Player activePlayer;
-    protected Timer timer;
     protected List<Block> activeBlocks;
     protected boolean gameOver;
     protected int currPlayerIndex = 0;
@@ -52,7 +51,6 @@ public abstract class GameState {
         this.players.add(playerOne);
         this.players.add(playerTwo);
         this.activePlayer = players.get(currPlayerIndex);
-        this.timer = new Timer();
         this.activeBlocks = new ArrayList<>();
         this.gameOver = false;
         int[] wins = GameChooser.getPlayerWins();
@@ -71,7 +69,7 @@ public abstract class GameState {
             return;
         }
 
-        timer.update(deltaTime);
+//        timer.update(deltaTime);
         updateGame(deltaTime);
         gameOver = checkGameOver();
     }
