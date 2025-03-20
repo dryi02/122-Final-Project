@@ -39,7 +39,6 @@ public class BejeweledGameState extends GameState {
     private boolean isGameOver = false;
 
     private String message2 = "Click arrow keys to move selection";
-    private String message3 = "Score: " + getCurrPlayerScore();
 
     /**
      * Sets custom names for both players.
@@ -378,7 +377,6 @@ public class BejeweledGameState extends GameState {
             currentPlayerTime = PLAYER_TIME_LIMIT;
             lastTimeUpdate = System.currentTimeMillis();
             message = getCurrPlayerName() + "'s Turn!";
-            message3 = "Score: " + getCurrPlayerScore();
             return true;
         }
         return false;
@@ -411,9 +409,6 @@ public class BejeweledGameState extends GameState {
         isTimerRunning = true;
         isGameOver = false;
         message = getCurrPlayerName() + "'s Turn!";
-        message3 = "Score: " + getCurrPlayerScore() + " | Wins - " +
-                players.get(0).getName() + ": " + player1Wins + " | " +
-                players.get(1).getName() + ": " + player2Wins;
     }
 
     /**
@@ -440,7 +435,6 @@ public class BejeweledGameState extends GameState {
                     message = "Time's Up! Game Over!";
                     message2 = "Player 1 Score: " + players.get(0).getScore() + " | Player 2 Score: "
                             + players.get(1).getScore();
-                    message3 = "Press R to start a new game";
                     isTimerRunning = false;
                     return;
                 }
@@ -454,7 +448,6 @@ public class BejeweledGameState extends GameState {
                     currentPlayerTime = PLAYER_TIME_LIMIT;
                     isTimerRunning = true;
                     message = getCurrPlayerName() + "'s Turn!";
-                    message3 = "Score: " + getCurrPlayerScore();
                 }
             }
         }
@@ -517,9 +510,6 @@ public class BejeweledGameState extends GameState {
             }
             message2 = players.get(0).getName() + " Score = " + scoreP1 + " | " +
                     players.get(1).getName() + " Score = " + scoreP2;
-            message3 = "Wins - " + players.get(0).getName() + ": " + player1Wins + " | " +
-                    players.get(1).getName() + ": " + player2Wins + " | Press R to start a new game";
-
             // Reset game state after displaying final scores
             playerOneFinished = false;
             isTimerRunning = false;
