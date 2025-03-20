@@ -331,7 +331,7 @@ public abstract class TileMatchingGameEnvironment extends GameState {
         Set<Point> connectedBlocks = grid.findConnectedBlocks(selectedRow, selectedCol, targetColor);
 
         // Only pop if there are at least MIN_BLOCKS_TO_POP connected blocks
-        if (connectedBlocks.size() >= MIN_BLOCKS_TO_POP) {
+        if (connectedBlocks.size() >= 1) {
             // Remove all connected blocks
             for (Point p : connectedBlocks) {
                 grid.removeBlock(p.x, p.y);

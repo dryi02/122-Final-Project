@@ -46,41 +46,7 @@ public class SameGameState extends TileMatchingGameEnvironment {
         }
     }
 
-    /**
-     * Pops (removes) all connected blocks of the same color at the selected
-     * position.
-     * In SameGame, we can pop any number of connected blocks (no minimum
-     * requirement).
-     */
-    @Override
-    protected void popConnectedBlocks() {
-        if (!grid.isOccupied(selectedRow, selectedCol)) {
-            message2 = "No block to pop at (" + selectedRow + ", " + selectedCol + ")";
-            return;
-        }
-
-        Block selectedBlock = grid.getBlock(selectedRow, selectedCol);
-        Color targetColor = selectedBlock.getColor();
-
-        // Find all connected blocks of the same color using BFS
-        Set<Point> connectedBlocks = grid.findConnectedBlocks(selectedRow, selectedCol, targetColor);
-
-        // In SameGame, we can pop any number of connected blocks
-        if (connectedBlocks.size() >= 1) {
-            // Remove all connected blocks
-            for (Point p : connectedBlocks) {
-                grid.removeBlock(p.x, p.y);
-            }
-
-            // Update score and message
-            addCurrPlayerScore(1);
-            message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
-            message2 = "Turns: " + getCurrPlayerScore();
-
-            // Apply gravity to make blocks fall
-            grid.applyGravity();
-        }
-    }
+  
 
     @Override
     public void handleInput(String input) {
