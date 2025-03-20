@@ -237,9 +237,6 @@ public class BejeweledGameState extends GameState {
             case "SPACE":
                 swapBlocks();
                 break;
-            case "R":
-                randomizeGrid();
-                break;
             case "M":
                 // Save current stats before returning to menu
                 GameChooser.updatePlayerNames(players.get(0).getName(), players.get(1).getName());
@@ -492,7 +489,6 @@ public class BejeweledGameState extends GameState {
         g.drawString("Controls:", textX, textY + 240);
         g.drawString("Arrow Keys: Move selection", textX, textY + 260);
         g.drawString("Space: Toggle block/Confirm swap", textX, textY + 280);
-        g.drawString("R: New Game", textX, textY + 300);
         g.drawString("M: Return to Menu", textX, textY + 320);
     }
     // protected void checkSwitchPlayer() {

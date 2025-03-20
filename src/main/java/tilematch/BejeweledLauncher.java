@@ -65,9 +65,6 @@ public class BejeweledLauncher extends GameLauncher {
             case KeyEvent.VK_SPACE:
                 gameState.handleInput("SPACE");
                 break;
-            case KeyEvent.VK_R:
-                gameState.handleInput("R");
-                break;
             case KeyEvent.VK_M:
                 gameState.handleInput("M");
                 break;
