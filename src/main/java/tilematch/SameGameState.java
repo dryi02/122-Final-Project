@@ -21,7 +21,6 @@ public class SameGameState extends GameState {
     private String message2 = "Turns: " + getCurrPlayerScore();
     private Grid gridSave;
 
-
     /**
      * Sets custom names for both players.
      * 
@@ -29,9 +28,9 @@ public class SameGameState extends GameState {
      * @param player2Name Name for Player 2
      */
     // public void setPlayerNames(String player1Name, String player2Name) {
-    //     players.get(0).setName(player1Name);
-    //     players.get(1).setName(player2Name);
-    //     message = getCurrPlayerName() + "'s Turn!";
+    // players.get(0).setName(player1Name);
+    // players.get(1).setName(player2Name);
+    // message = getCurrPlayerName() + "'s Turn!";
     // }
 
     /**
@@ -142,7 +141,7 @@ public class SameGameState extends GameState {
         Color targetColor = selectedBlock.getColor();
 
         // Find all connected blocks of the same color using BFS
-        Set<Point> connectedBlocks = findConnectedBlocks(selectedRow, selectedCol, targetColor);
+        Set<Point> connectedBlocks = grid.findConnectedBlocks(selectedRow, selectedCol, targetColor);
 
         // Only pop if there are at least MIN_BLOCKS_TO_POP connected blocks
         if (connectedBlocks.size() >= 1) {
@@ -157,21 +156,12 @@ public class SameGameState extends GameState {
             message2 = "Turns: " + getCurrPlayerScore();
 
             // Apply gravity to make blocks fall
-            applyGravity();
+            grid.applyGravity();
             checkSwitchPlayer();
-
-            // Fill empty spaces at the top with new blocks
-            // fillEmptySpaces();
-
-            // Check for cascading matches
-            // checkCascadingMatches();
         } else {
             message = "Need at least " + 1 + " connected blocks to pop";
         }
     }
-
-    
-    
 
     /**
      * Randomizes the grid with new blocks.
@@ -189,8 +179,8 @@ public class SameGameState extends GameState {
      * Clears all blocks from the grid.
      */
     @Override
-	public void clearGrid() {
-    	super.clearGrid();
+    public void clearGrid() {
+        super.clearGrid();
         message = "Grid cleared";
     }
 
@@ -199,11 +189,11 @@ public class SameGameState extends GameState {
         // No game logic to update in this demo
     }
 
-//    protected void renderUI(Graphics g) {
-//        renderInstructions(g);
-//        renderSelectionHighlight(g);
-//        renderSwapSelectionHighlight(g);
-//    }
+    // protected void renderUI(Graphics g) {
+    // renderInstructions(g);
+    // renderSelectionHighlight(g);
+    // renderSwapSelectionHighlight(g);
+    // }
 
     protected void renderInstructions(Graphics g) {
         g.setColor(Color.WHITE);
@@ -266,12 +256,12 @@ public class SameGameState extends GameState {
         return false;
     }
 
-//    @Override
-//    public void render(Graphics g) {
-//        // Render the grid (which includes the blocks)
-//        grid.render(g);
-//
-//        // Render UI elements
-//        renderUI(g);
-//    }
+    // @Override
+    // public void render(Graphics g) {
+    // // Render the grid (which includes the blocks)
+    // grid.render(g);
+    //
+    // // Render UI elements
+    // renderUI(g);
+    // }
 }

@@ -2,6 +2,11 @@ package tilematch;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 /**
  * The Grid class represents the game grid.
@@ -199,7 +204,7 @@ public class Grid {
         }
         return false;
     }
-    
+
     /**
      * Checks if the entire grid is empty.
      *
@@ -215,7 +220,6 @@ public class Grid {
         }
         return true; // All cells are empty
     }
-    
 
     /**
      * Renders the grid to the specified graphics context.
@@ -292,5 +296,80 @@ public class Grid {
      */
     public int getYOffset() {
         return yOffset;
+    }
+
+    /**
+     * Applies gravity to make blocks fall into empty spaces.
+     */
+    public void applyGravity() {
+        // For each column
+        for (int col = 0; col < columns; col++) {
+            // Start from the bottom row
+            for (int row = rows - 1; row >= 0; row--) {
+                // If the cell is empty
+                if (!isOccupied(row, col)) {
+                    // Find the first non-empty cell above
+                    int aboveRow = row - 1;
+                    while (aboveRow >= 0) {
+                        if (isOccupied(aboveRow, col)) {
+                            // Move the block down
+                            Block block = removeBlock(aboveRow, col);
+                            placeBlock(block, row, col);
+                            break;
+                        }
+                        aboveRow--;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Finds all connected blocks of the same color using BFS.
+     * 
+     * @param startRow    The starting row
+     * @param startCol    The starting column
+     * @param targetColor The color to match
+     * @return Set of Points representing connected blocks
+     */
+    public Set<Point> findConnectedBlocks(int startRow, int startCol, Color targetColor) {
+        Set<Point> visited = new HashSet<>();
+        Queue<Point> queue = new LinkedList<>();
+
+        // Add the starting point
+        Point start = new Point(startRow, startCol);
+        queue.add(start);
+        visited.add(start);
+
+        // Define the four directions: up, right, down, left
+        int[][] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+
+        // BFS to find all connected blocks of the same color
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+
+            // Check all four adjacent positions
+            for (int[] dir : directions) {
+                int newRow = current.x + dir[0];
+                int newCol = current.y + dir[1];
+                Point newPoint = new Point(newRow, newCol);
+
+                // Check if the position is valid and not visited
+                if (isValidPosition(newRow, newCol) &&
+                        isOccupied(newRow, newCol) &&
+                        !visited.contains(newPoint)) {
+
+                    Block block = getBlock(newRow, newCol);
+
+                    // If the block has the same color, add it to the queue
+                    if (block.getColor().equals(targetColor)) {
+                        queue.add(newPoint);
+                        visited.add(newPoint);
+                    }
+                }
+            }
+        }
+
+        return visited;
     }
 }

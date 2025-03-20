@@ -48,9 +48,9 @@ public class BejeweledGameState extends GameState {
      * @param player2Name Name for Player 2
      */
     // public void setPlayerNames(String player1Name, String player2Name) {
-    //     players.get(0).setName(player1Name);
-    //     players.get(1).setName(player2Name);
-    //     message = getCurrPlayerName() + "'s Turn!";
+    // players.get(0).setName(player1Name);
+    // players.get(1).setName(player2Name);
+    // message = getCurrPlayerName() + "'s Turn!";
     // }
 
     /**
@@ -195,7 +195,7 @@ public class BejeweledGameState extends GameState {
             for (int col = 0; col < grid.getColumns(); col++) {
                 if (grid.isOccupied(row, col)) {
                     Block block = grid.getBlock(row, col);
-                    Set<Point> matches = findConnectedBlocks(row, col, block.getColor());
+                    Set<Point> matches = grid.findConnectedBlocks(row, col, block.getColor());
 
                     if (matches.size() >= MIN_BLOCKS_TO_POP) {
                         return true;
@@ -348,7 +348,7 @@ public class BejeweledGameState extends GameState {
             for (int col = 0; col < grid.getColumns(); col++) {
                 if (grid.isOccupied(row, col)) {
                     Block block = grid.getBlock(row, col);
-                    Set<Point> matches = findConnectedBlocks(row, col, block.getColor());
+                    Set<Point> matches = grid.findConnectedBlocks(row, col, block.getColor());
 
                     if (matches.size() >= MIN_BLOCKS_TO_POP) {
                         allMatches.addAll(matches);
@@ -367,7 +367,7 @@ public class BejeweledGameState extends GameState {
             message2 = "Popped " + allMatches.size() + " blocks!";
 
             // Apply gravity and fill empty spaces
-            applyGravity();
+            grid.applyGravity();
             fillEmptySpaces();
 
             // Check for new matches after blocks fall and new blocks are added
@@ -386,8 +386,6 @@ public class BejeweledGameState extends GameState {
         }
         return false;
     }
-
-   
 
     /**
      * Fills empty spaces at the top of the grid with new random blocks.
@@ -425,8 +423,8 @@ public class BejeweledGameState extends GameState {
      * Clears all blocks from the grid.
      */
     @Override
-	public void clearGrid() {
-    	super.clearGrid();
+    public void clearGrid() {
+        super.clearGrid();
         message2 = "Grid cleared";
     }
 
@@ -536,12 +534,12 @@ public class BejeweledGameState extends GameState {
         return false;
     }
 
-//    @Override
-//    public void render(Graphics g) {
-//        // Render the grid (which includes the blocks)
-//        grid.render(g);
-//
-//        // Render UI elements
-//        renderUI(g);
-//    }
+    // @Override
+    // public void render(Graphics g) {
+    // // Render the grid (which includes the blocks)
+    // grid.render(g);
+    //
+    // // Render UI elements
+    // renderUI(g);
+    // }
 }

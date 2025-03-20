@@ -70,7 +70,8 @@ public class GridDemoState extends GameState {
      * Initializes the grid with random blocks, allowing matches.
      */
     private void initializeGridWithMatches() {
-        // Create a board that encourages matches by making neighboring blocks likely to have the same color
+        // Create a board that encourages matches by making neighboring blocks likely to
+        // have the same color
         for (int row = 0; row < grid.getRows(); row++) {
             for (int col = 0; col < grid.getColumns(); col++) {
                 Color color;
@@ -89,7 +90,6 @@ public class GridDemoState extends GameState {
             }
         }
     }
-
 
     /**
      * Initializes the grid with random blocks, ensuring no initial matches.
@@ -212,7 +212,7 @@ public class GridDemoState extends GameState {
             for (int col = 0; col < grid.getColumns(); col++) {
                 if (grid.isOccupied(row, col)) {
                     Block block = grid.getBlock(row, col);
-                    Set<Point> matches = findConnectedBlocks(row, col, block.getColor());
+                    Set<Point> matches = grid.findConnectedBlocks(row, col, block.getColor());
 
                     if (matches.size() >= MIN_BLOCKS_TO_POP) {
                         return true;
@@ -380,7 +380,7 @@ public class GridDemoState extends GameState {
             for (int col = 0; col < grid.getColumns(); col++) {
                 if (grid.isOccupied(row, col)) {
                     Block block = grid.getBlock(row, col);
-                    Set<Point> matches = findConnectedBlocks(row, col, block.getColor());
+                    Set<Point> matches = grid.findConnectedBlocks(row, col, block.getColor());
 
                     if (matches.size() >= MIN_BLOCKS_TO_POP) {
                         allMatches.addAll(matches);
@@ -400,7 +400,7 @@ public class GridDemoState extends GameState {
             message = "Popped " + allMatches.size() + " blocks! Score: " + score;
 
             // Apply gravity and fill empty spaces
-            applyGravity();
+            grid.applyGravity();
             fillEmptySpaces();
 
             // Check for cascading matches
@@ -466,7 +466,7 @@ public class GridDemoState extends GameState {
         Color targetColor = selectedBlock.getColor();
 
         // Find all connected blocks of the same color using BFS
-        Set<Point> connectedBlocks = findConnectedBlocks(selectedRow, selectedCol, targetColor);
+        Set<Point> connectedBlocks = grid.findConnectedBlocks(selectedRow, selectedCol, targetColor);
 
         // Only pop if there are at least MIN_BLOCKS_TO_POP connected blocks
         if (connectedBlocks.size() >= MIN_BLOCKS_TO_POP) {
@@ -480,92 +480,17 @@ public class GridDemoState extends GameState {
             message = "Popped " + connectedBlocks.size() + " blocks! Score: " + score;
 
             // Apply gravity to make blocks fall
-            applyGravity();
+            grid.applyGravity();
 
             // Fill empty spaces at the top with new blocks
-            //fillEmptySpaces();
+            // fillEmptySpaces();
 
             // Check for cascading matches
-            //checkCascadingMatches();
+            // checkCascadingMatches();
         } else {
             message = "Need at least " + MIN_BLOCKS_TO_POP + " connected blocks to pop";
         }
     }
-
-    /**
-     * Finds all connected blocks of the same color using Breadth-First Search.
-     * 
-     * @param startRow    The starting row
-     * @param startCol    The starting column
-     * @param targetColor The color to match
-     * @return A set of points representing connected blocks
-     */
-    // private Set<Point> findConnectedBlocks(int startRow, int startCol, Color targetColor) {
-    //     Set<Point> visited = new HashSet<>();
-    //     Queue<Point> queue = new LinkedList<>();
-
-    //     // Add the starting point
-    //     Point start = new Point(startRow, startCol);
-    //     queue.add(start);
-    //     visited.add(start);
-
-    //     // Define the four directions: up, right, down, left
-    //     int[][] directions = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
-
-    //     // BFS to find all connected blocks of the same color
-    //     while (!queue.isEmpty()) {
-    //         Point current = queue.poll();
-
-    //         // Check all four adjacent positions
-    //         for (int[] dir : directions) {
-    //             int newRow = current.x + dir[0];
-    //             int newCol = current.y + dir[1];
-    //             Point newPoint = new Point(newRow, newCol);
-
-    //             // Check if the position is valid and not visited
-    //             if (grid.isValidPosition(newRow, newCol) &&
-    //                     grid.isOccupied(newRow, newCol) &&
-    //                     !visited.contains(newPoint)) {
-
-    //                 Block block = grid.getBlock(newRow, newCol);
-
-    //                 // If the block has the same color, add it to the queue
-    //                 if (block.getColor().equals(targetColor)) {
-    //                     queue.add(newPoint);
-    //                     visited.add(newPoint);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return visited;
-    // }
-
-    // /**
-    //  * Applies gravity to make blocks fall after popping.
-    //  */
-    // private void applyGravity() {
-    //     // For each column
-    //     for (int col = 0; col < grid.getColumns(); col++) {
-    //         // Start from the bottom row
-    //         for (int row = grid.getRows() - 1; row >= 0; row--) {
-    //             // If the cell is empty
-    //             if (!grid.isOccupied(row, col)) {
-    //                 // Find the first non-empty cell above
-    //                 int aboveRow = row - 1;
-    //                 while (aboveRow >= 0) {
-    //                     if (grid.isOccupied(aboveRow, col)) {
-    //                         // Move the block down
-    //                         Block block = grid.removeBlock(aboveRow, col);
-    //                         grid.placeBlock(block, row, col);
-    //                         break;
-    //                     }
-    //                     aboveRow--;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     /**
      * Fills empty spaces at the top of the grid with new random blocks.
@@ -657,7 +582,7 @@ public class GridDemoState extends GameState {
     @Override
     protected boolean checkGameOver() {
         // No game over condition in this demo
-    	return false;
+        return false;
     }
 
     @Override
@@ -669,10 +594,10 @@ public class GridDemoState extends GameState {
         renderUI(g);
     }
 
-	@Override
-	protected void renderInstructions(Graphics g) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    protected void renderInstructions(Graphics g) {
+        // TODO Auto-generated method stub
+
+    }
 
 }
