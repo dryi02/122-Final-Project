@@ -74,14 +74,19 @@ The environment consists of several key components:
 
 ## Running the Game
 
-1. Compile the project:
+Method 1:
+   1. Run the TMGE.jar file
 
-   ```
-   javac -d bin src/main/java/tilematch/*.java
-   ```
 
-2. Run the game:
-   ```
-   java -cp bin tilematch.GameChooser
-   ```
+Method 2:
+   1. Compile the project:
+
+      ```
+      javac -d bin src/main/java/tilematch/*.java
+      ```
+
+   2. Run the game:
+      ```
+      java -cp bin tilematch.GameChooser
+      ```
 
