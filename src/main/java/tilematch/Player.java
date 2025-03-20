@@ -7,8 +7,6 @@ package tilematch;
 public class Player {
     private String name;
     private int score;
-    private int level;
-    private int linesCleared;
 
     /**
      * Creates a new Player with default settings.
@@ -16,8 +14,6 @@ public class Player {
     public Player() {
         this.name = "Player";
         this.score = 0;
-        this.level = 1;
-        this.linesCleared = 0;
     }
 
     /**
