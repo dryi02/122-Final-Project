@@ -4,44 +4,23 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import javax.swing.SwingUtilities;
 
 /**
- * A demonstration class that shows a grid with blocks that can be interacted
- * with.
- * This is a simplified version without game mechanics, just to test display and
- * interaction.
+ * SameGameState implements a Same Game style matching game.
+ * It extends TileMatchingGameEnvironment to utilize common tile-matching
+ * functionality.
  */
-public class SameGameState extends GameState {
+public class SameGameState extends TileMatchingGameEnvironment {
     private String message2 = "Turns: " + getCurrPlayerScore();
     private Grid gridSave;
 
     /**
-     * Sets custom names for both players.
-     * 
-     * @param player1Name Name for Player 1
-     * @param player2Name Name for Player 2
-     */
-    // public void setPlayerNames(String player1Name, String player2Name) {
-    // players.get(0).setName(player1Name);
-    // players.get(1).setName(player2Name);
-    // message = getCurrPlayerName() + "'s Turn!";
-    // }
-
-    /**
-     * Creates a new GridDemoState with the specified dimensions.
-     *
-     * @param rows    The number of rows in the grid
-     * @param columns The number of columns in the grid
+     * Creates a new SameGameState with the specified dimensions.
      */
     public SameGameState(int rows, int columns) {
         super(rows, columns);
-        // Load win counts from GameChooser
         gridSave = new Grid(rows, columns);
         initializeGrid();
     }
@@ -51,35 +30,55 @@ public class SameGameState extends GameState {
      */
     private void initializeGrid() {
         initializeGridWithMatches();
-
         // Select the center block initially
         selectedRow = grid.getRows() / 2;
         selectedCol = grid.getColumns() / 2;
+
+        // Save initial grid state
+        for (int row = 0; row < grid.getRows(); row++) {
+            for (int col = 0; col < grid.getColumns(); col++) {
+                Block block = grid.getBlock(row, col);
+                if (block != null) {
+                    gridSave.placeBlock(new Block(block.getRow(), block.getColumn(), block.getType(), block.getColor()),
+                            row, col);
+                }
+            }
+        }
     }
 
     /**
-     * Initializes the grid with random blocks, allowing matches.
+     * Pops (removes) all connected blocks of the same color at the selected
+     * position.
+     * In SameGame, we can pop any number of connected blocks (no minimum
+     * requirement).
      */
-    private void initializeGridWithMatches() {
-        // Create a board that encourages matches by making neighboring blocks likely to
-        // have the same color
-        for (int row = 0; row < grid.getRows(); row++) {
-            for (int col = 0; col < grid.getColumns(); col++) {
-                Color color;
-                if (row > 0 && RANDOM.nextDouble() < 0.7) {
-                    // 70% chance to inherit the color from the block above
-                    color = grid.getBlock(row - 1, col).getColor();
-                } else if (col > 0 && RANDOM.nextDouble() < 0.7) {
-                    // 70% chance to inherit the color from the block to the left
-                    color = grid.getBlock(row, col - 1).getColor();
-                } else {
-                    // Otherwise, pick a random color
-                    color = BLOCK_COLORS[RANDOM.nextInt(BLOCK_COLORS.length)];
-                }
-                Block block = new Block(row, col, Block.BlockType.STANDARD, color);
-                grid.placeBlock(block, row, col);
-                gridSave.placeBlock(block, row, col);
+    @Override
+    protected void popConnectedBlocks() {
+        if (!grid.isOccupied(selectedRow, selectedCol)) {
+            message2 = "No block to pop at (" + selectedRow + ", " + selectedCol + ")";
+            return;
+        }
+
+        Block selectedBlock = grid.getBlock(selectedRow, selectedCol);
+        Color targetColor = selectedBlock.getColor();
+
+        // Find all connected blocks of the same color using BFS
+        Set<Point> connectedBlocks = grid.findConnectedBlocks(selectedRow, selectedCol, targetColor);
+
+        // In SameGame, we can pop any number of connected blocks
+        if (connectedBlocks.size() >= 1) {
+            // Remove all connected blocks
+            for (Point p : connectedBlocks) {
+                grid.removeBlock(p.x, p.y);
             }
+
+            // Update score and message
+            addCurrPlayerScore(1);
+            message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
+            message2 = "Turns: " + getCurrPlayerScore();
+
+            // Apply gravity to make blocks fall
+            grid.applyGravity();
         }
     }
 
@@ -112,6 +111,7 @@ public class SameGameState extends GameState {
                 break;
             case "P":
                 popConnectedBlocks();
+                checkSwitchPlayer();
                 break;
             case "M":
                 // Save current stats before returning to menu
@@ -127,45 +127,7 @@ public class SameGameState extends GameState {
         }
     }
 
-    /**
-     * Pops (removes) all connected blocks of the same color at the selected
-     * position.
-     */
-    private void popConnectedBlocks() {
-        if (!grid.isOccupied(selectedRow, selectedCol)) {
-            message = "No block to pop at (" + selectedRow + ", " + selectedCol + ")";
-            return;
-        }
-
-        Block selectedBlock = grid.getBlock(selectedRow, selectedCol);
-        Color targetColor = selectedBlock.getColor();
-
-        // Find all connected blocks of the same color using BFS
-        Set<Point> connectedBlocks = grid.findConnectedBlocks(selectedRow, selectedCol, targetColor);
-
-        // Only pop if there are at least MIN_BLOCKS_TO_POP connected blocks
-        if (connectedBlocks.size() >= 1) {
-            // Remove all connected blocks
-            for (Point p : connectedBlocks) {
-                grid.removeBlock(p.x, p.y);
-            }
-
-            // Update score and message
-            addCurrPlayerScore(1);
-            message = "Popped " + connectedBlocks.size() + " blocks! Turns: " + getCurrPlayerScore();
-            message2 = "Turns: " + getCurrPlayerScore();
-
-            // Apply gravity to make blocks fall
-            grid.applyGravity();
-            checkSwitchPlayer();
-        } else {
-            message = "Need at least " + 1 + " connected blocks to pop";
-        }
-    }
-
-    /**
-     * Randomizes the grid with new blocks.
-     */
+    @Override
     public void randomizeGrid() {
         grid.clear();
         initializeGrid();
@@ -186,15 +148,10 @@ public class SameGameState extends GameState {
 
     @Override
     protected void updateGame(double deltaTime) {
-        // No game logic to update in this demo
+        // No game logic to update in this game
     }
 
-    // protected void renderUI(Graphics g) {
-    // renderInstructions(g);
-    // renderSelectionHighlight(g);
-    // renderSwapSelectionHighlight(g);
-    // }
-
+    @Override
     protected void renderInstructions(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
@@ -213,18 +170,22 @@ public class SameGameState extends GameState {
         g.drawString("M: Return to Menu", textX, textY + 180);
     }
 
-    protected void loadGridSave() {
+    private void loadGridSave() {
         for (int row = 0; row < grid.getRows(); row++) {
             for (int col = 0; col < grid.getColumns(); col++) {
-                grid.placeBlock(gridSave.getBlock(row, col), row, col);
+                Block block = gridSave.getBlock(row, col);
+                if (block != null) {
+                    grid.placeBlock(new Block(block.getRow(), block.getColumn(), block.getType(), block.getColor()),
+                            row, col);
+                }
             }
         }
     }
 
-    protected void checkSwitchPlayer() {
-        if (grid.isGridEmpty() && this.playerOneFinished == false) {
+    private void checkSwitchPlayer() {
+        if (grid.isGridEmpty() && !playerOneFinished) {
             switchPlayers();
-            this.playerOneFinished = true;
+            playerOneFinished = true;
             message = getCurrPlayerName() + "'s Turn!";
             message2 = "Turns: 0";
             loadGridSave();
@@ -255,13 +216,4 @@ public class SameGameState extends GameState {
         }
         return false;
     }
-
-    // @Override
-    // public void render(Graphics g) {
-    // // Render the grid (which includes the blocks)
-    // grid.render(g);
-    //
-    // // Render UI elements
-    // renderUI(g);
-    // }
 }
