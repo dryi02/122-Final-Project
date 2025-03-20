@@ -31,7 +31,7 @@ public class BejeweledGameState extends GameState {
     private static final int MAX_GENERATION_ATTEMPTS = 100;
 
     private static final int PLAYER_TIME_LIMIT = 20; // 30 seconds per player
-    private static final int GLOBAL_TIME_LIMIT = 30; // 5 minutes in seconds
+    private static final int GLOBAL_TIME_LIMIT = 300; // 5 minutes in seconds
     private int currentPlayerTime = PLAYER_TIME_LIMIT;
     private int globalTime = GLOBAL_TIME_LIMIT;
     private long lastTimeUpdate = System.currentTimeMillis();
